@@ -1,4 +1,5 @@
-'''Closure class for computing the closure of a set of partitions.'''
+'''Closure class for computing the closure of a set of partitions.
+@author: williamdemeo at gmail'''
 
 from org.uacalc.alg.conlat import BasicPartition
 import itertools
