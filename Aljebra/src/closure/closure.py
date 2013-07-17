@@ -1,3 +1,5 @@
+'''Closure class for computing the closure of a set of partitions.'''
+
 from org.uacalc.alg.conlat import BasicPartition
 import itertools
 from itertools import chain, combinations
