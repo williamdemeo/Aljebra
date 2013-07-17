@@ -9,7 +9,6 @@ from closure.closure import Closure
 
 class Test(unittest.TestCase):
 
-
     def setUp(self):
         
         # Test Case 0 (first, very basic test):
@@ -41,7 +40,6 @@ class Test(unittest.TestCase):
         dc = BasicPartition("|0,2,4,6,8,10|1,7|3,5,9,11|12,14,16,18,20,22|13,19|15,17,21,23|24,26,28,30,32,34|25,31|27,29,33,35|")
         self.partsC = ad,bd,cd,da,db,dc
 
-
     def tearDown(self):
         pass
 
@@ -56,7 +54,7 @@ class Test(unittest.TestCase):
         print "    cl.partitions = ", cl.partitions
         ans = cl.sd_embedding()
         print "    The subdirect embedding is:", ans
-        self.assertEquals(ans, correct_ans, "Test", current_test_number, ": sd_embedding seems broken")
+        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
 
         # ----Test 1----
         current_test_number+=1
@@ -66,11 +64,20 @@ class Test(unittest.TestCase):
         print "    cl.partitions = ", cl.partitions
         ans = cl.sd_embedding()
         print "    The subdirect embedding is:", ans
-        self.assertEquals(ans, correct_ans, "Test", current_test_number, ": sd_embedding seems broken")
-
+        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
 
     def test_optimal_sdf_subset(self):
-        pass
+        cl = Closure()
+        # ----Test 0----  
+        current_test_number = 0
+        correct_ans = [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]]
+        print "\n--- Test", current_test_number, "---"
+        cl.set_partitions(self.partsAA)
+        print "    cl.partitions = ", cl.partitions
+        ans = cl.sd_embedding()
+        print "    The subdirect embedding is:", ans
+        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
