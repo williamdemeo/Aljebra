@@ -1,5 +1,4 @@
 from org.uacalc.alg.conlat import BasicPartition
-import itertools
 from itertools import chain, combinations
 
 
