@@ -46,6 +46,8 @@ class Test(unittest.TestCase):
     def test_sd_embedding(self):
         cl = Closure()
         
+        fun_name = "sd_embedding()"
+        print "\n===== Testing", fun_name, "====="
         # ----Test 0----  
         current_test_number = 0
         correct_ans = [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]]
@@ -54,7 +56,7 @@ class Test(unittest.TestCase):
         print "    cl.partitions = ", cl.partitions
         ans = cl.sd_embedding()
         print "    The subdirect embedding is:", ans
-        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
+        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
         # ----Test 1----
         current_test_number+=1
@@ -68,15 +70,50 @@ class Test(unittest.TestCase):
 
     def test_optimal_sdf_subset(self):
         cl = Closure()
+        fun_name = "optimal_sdf_subset()"
+        print "\n===== Testing", fun_name, "====="
+
         # ----Test 0----  
         current_test_number = 0
-        correct_ans = [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]]
         print "\n--- Test", current_test_number, "---"
         cl.set_partitions(self.partsAA)
+        correct_ans = self.partsAA
         print "    cl.partitions = ", cl.partitions
-        ans = cl.sd_embedding()
-        print "    The subdirect embedding is:", ans
-        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
+        ans = cl.optimal_sdf_subset()
+        print "    The optimal sdf subset is:", ans
+        self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
+
+        # ----Test 1----  
+        current_test_number+=1
+        print "\n--- Test", current_test_number, "---"
+        cl.set_partitions(self.partsA)
+        #correct_ans = self.partsA
+        print "    cl.partitions = ", cl.partitions
+        ans = cl.optimal_sdf_subset()
+        print "    The optimal sdf subset is:", ans
+        #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
+
+
+        # ----Test 2----  
+        current_test_number+=1
+        print "\n--- Test", current_test_number, "---"
+        cl.set_partitions(self.partsB)
+        #correct_ans = self.partsA
+        print "    cl.partitions = ", cl.partitions
+        ans = cl.optimal_sdf_subset()
+        print "    The optimal sdf subset is:", ans
+        #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
+
+
+        # ----Test 3----  
+        current_test_number+=1
+        print "\n--- Test", current_test_number, "---"
+        cl.set_partitions(self.partsC)
+        #correct_ans = self.partsA
+        print "    cl.partitions = ", cl.partitions
+        ans = cl.optimal_sdf_subset()
+        print "    The optimal sdf subset is:", ans
+        #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
 
 if __name__ == "__main__":

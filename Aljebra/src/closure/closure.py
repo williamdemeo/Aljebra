@@ -50,7 +50,7 @@ class Closure(object):
 
 
 
-    def optimal_sdf_subset(self,pars):
+    def optimal_sdf_subset(self):
         '''Return a subset S of partitions pars that is optimal for computing
         the closure of pars using a subdirect factorization.
         For S to result in a subdirect decomposition, the partitions in S must meet to 0.
@@ -59,9 +59,9 @@ class Closure(object):
         where a, b, c,... denote the numbers of blocks in partitions S[0], S[1], S[2], ...
         :param pars:
         '''
-        pars = BasicPartition.joinClosure(pars)
+        n = self.partitions[0].universeSize()
+        pars = BasicPartition.joinClosure(self.partitions)
         N = len(pars)
-        n = pars[0].universeSize()
         d_size = n**n  # the number to minimize
         #ZeRo = BasicPartition.zero(n)
         for k in range(2,N+1):
