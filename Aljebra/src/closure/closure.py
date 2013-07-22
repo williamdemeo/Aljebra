@@ -3,11 +3,31 @@
 
 from org.uacalc.alg.conlat import BasicPartition
 from itertools import chain, combinations
+from org.uacalc.io import AlgebraIO
 
 
 
 class Closure(object):
 
+    @staticmethod
+    def slow_closure(p):
+        '''For a set of partitions p, compute the closure, that is, the set of 
+        all partitions respected by all unary ops that respect all partitions in p.  
+        This is the old, slower way of computing the closure.'''
+        A = BasicPartition.unaryPolymorphismsAlgebra(p)
+        print "|ConA| = ", len(A.con().universe())
+        AlgebraIO.writeAlgebraFile(A, "/tmp/A.ua")
+        return A.con()
+
+    @staticmethod
+    def maximal_element(ind, BL):
+        '''Return a maximal element of the given basic lattice among those with indices in ind.'''
+        pars = BL.getUniverseList()
+        max_par = pars[ind[0]]
+        for i in ind:
+            if BL.leq(max_par, pars[i]):
+                max_par = pars[i]
+        return max_par
 
     @staticmethod
     def nary_meet(pars):
