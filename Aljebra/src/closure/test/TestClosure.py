@@ -52,7 +52,6 @@ class Test(unittest.TestCase):
 
 
     def test_decomp_size(self):
-        cl = Closure()
         fun_name = "decomp_size()"
         # NB: the correct_ans variables in the tests of decomp_size() are the values we expect to
         # be returned by decomp_size __for the given partitions__, not necessarily for the optimal 
@@ -90,18 +89,17 @@ class Test(unittest.TestCase):
         self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
         
-    def test_sd_embedding(self):
-        cl = Closure()
+    def test_compute_sd_embedding(self):
         
-        fun_name = "sd_embedding()"
+        fun_name = "compute_sd_embedding()"
         print "\n===== Testing", fun_name, "====="
         # ----Test 0----  
         current_test_number = 0
         correct_ans = [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]]
         print "\n--- Test", current_test_number, "---"
-        cl.set_partitions(self.partsAA)
+        cl = Closure(self.partsAA)
         print "    cl.partitions = ", cl.partitions
-        ans = cl.sd_embedding()
+        ans = cl.compute_sd_embedding()
         print "    The subdirect embedding is:", ans
         self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
@@ -109,16 +107,15 @@ class Test(unittest.TestCase):
         current_test_number+=1
         correct_ans = [[0,0,0,0], [1,0,0,0], [1,0,1,0], [1,1,1,0], [1,1,2,0], [2,1,2,1], [2,2,3,1], [3,2,3,1], [3,2,0,1]]
         print "\n--- Test", current_test_number, "---"
-        cl.set_partitions(self.partsA)
+        cl = Closure(self.partsA)
         print "    cl.partitions = ", cl.partitions
-        ans = cl.sd_embedding()
+        ans = cl.compute_sd_embedding()
         print "    The subdirect embedding is:", ans
-        #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": sd_embedding seems broken")
+        # self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
 
-    def test_optimal_sdf_subset(self):
-        cl = Closure()
-        fun_name = "optimal_sdf_subset()"
+    def test_compute_optimal_sdf_subset(self):
+        fun_name = "compute_optimal_sdf_subset()"
         print "\n===== Testing", fun_name, "====="
 
         run_tests = [4]  # list of which tests to run
@@ -127,10 +124,10 @@ class Test(unittest.TestCase):
         current_test_number = 0
         if current_test_number in run_tests:
             print "\n--- Test", current_test_number, "---"
-            cl.set_partitions(self.partsAA)
+            cl = Closure(self.partsAA)
             correct_ans = self.partsAA
             print "    cl.partitions = ", cl.partitions
-            ans = cl.optimal_sdf_subset()
+            ans = cl.compute_optimal_sdf_subset()
             print "    The optimal sdf subset is:", ans
             #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
@@ -138,10 +135,10 @@ class Test(unittest.TestCase):
         current_test_number+=1
         if current_test_number in run_tests:
             print "\n--- Test", current_test_number, "---"
-            cl.set_partitions(self.partsA)
+            cl = Closure(self.partsA)
             correct_ans = self.partsA
             print "    cl.partitions = ", cl.partitions
-            ans = cl.optimal_sdf_subset()
+            ans = cl.compute_optimal_sdf_subset()
             print "    The optimal sdf subset is:", ans
             self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
@@ -150,10 +147,10 @@ class Test(unittest.TestCase):
         current_test_number+=1
         if current_test_number in run_tests:
             print "\n--- Test", current_test_number, "---"
-            cl.set_partitions(self.partsB)
+            cl = Closure(self.partsB)
             #correct_ans = self.partsB
             print "    cl.partitions = ", cl.partitions
-            ans = cl.optimal_sdf_subset()
+            ans = cl.compute_optimal_sdf_subset()
             print "    The optimal sdf subset is:", ans
             #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
@@ -162,10 +159,10 @@ class Test(unittest.TestCase):
         current_test_number+=1
         if current_test_number in run_tests:
             print "\n--- Test", current_test_number, "---"
-            cl.set_partitions(self.partsC)
+            cl = Closure(self.partsC)
             #correct_ans = self.partsC
             print "    cl.partitions = ", cl.partitions
-            ans = cl.optimal_sdf_subset()
+            ans = cl.compute_optimal_sdf_subset()
             print "    The optimal sdf subset is:", ans
             #self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
 
@@ -173,10 +170,10 @@ class Test(unittest.TestCase):
         current_test_number+=1
         if current_test_number in run_tests:
             print "\n--- Test", current_test_number, "---"
-            cl.set_partitions(self.partsD)
+            cl = Closure(self.partsD)
             correct_ans = self.partsD[0], self.partsD[1]
             print "    cl.partitions = ", cl.partitions
-            ans = cl.optimal_sdf_subset()
+            ans = cl.compute_optimal_sdf_subset()
             print "    The optimal sdf subset is :", ans
             #print "    The expected sdf subset is:", correct_ans
             self.assertEquals(ans, correct_ans, "Test "+str(current_test_number)+": " + fun_name + "seems broken")
