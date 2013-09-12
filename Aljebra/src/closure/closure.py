@@ -21,7 +21,13 @@ class UnaryPolynomial:
     
     # What fraction of this operation's table has been filled in?
     def progress(self):
-        return len(self.table)/self.domain
+        return float(len(self.table))/float(self.domain)
+
+    # Allow easy printing a list L of UnaryPolynomial objects (just print the table)
+    def __str__(self):
+        return str(self.table)
+    def __repr__(self):
+        return str(self)
     
 
 class Closure(object):
@@ -46,7 +52,13 @@ class Closure(object):
         # Fix will store the unary functions that respect all partitions in self.partitions 
         self.Fix = None
         self.has_Fix = False
-        
+
+    def subarray(self, i,j):
+        ''' return the rows of the sd_embedding that have a j in the ith column'''
+        if self.has_sd_embedding==False:
+            self.compute_sd_embedding()
+        indx = [p for p, row in enumerate(self.sd_embedding) if row[i]==j]
+        return [self.sd_embedding[i] for i in indx]
 
     # check if it's okay to have added k to position j of F[i] 
     # (F[i][j] = k means the ith function will map j to k.
@@ -56,22 +68,26 @@ class Closure(object):
             
         n = len(self.sd_embedding)
         r = len(F)
+
+        Dom = self.subarray(i,j)  # get those rows with j in the ith column
+        Ran = self.subarray(i,k)  # get those rows with k in the ith column
+        print "Dom: ", Dom
+        print "Ran: ", Ran
         
-        for x in range(n):
-            y=[-1]*r
-            # find each row of embedding where ith column is j 
-            if (self.sd_embedding[x][i]==j):
-            # (these must be mapped to a row of sd_embedding with k in the ith column)
-                for p in range(r):
-                    if len(F[p].table) < self.sd_embedding[x][p]:
-                        # then we can't determine if it's okay to put k in pos j of F[i]
-                        return -1
-                    y[p] = F[p].table[self.sd_embedding[x][p]]
-            # now check that the y vector is in the sd_embedding range of values
-            if not (y in self.sd_embedding):
-                return False
+        # Putting the value k at position F[i][j] means the ith function in F maps j to k.
+        # The set of rows of sd_embedding with j in column i must get mapped to 
+        # the set of rows of sd_embedding with k in column i.
+        ColsD = zip(*Dom)
+        ColsR = zip(*Ran)
         
-        return True
+        fun_indx = range(r)
+        del fun_indx[i]     # Don't want to check the ith function!
+        for p in fun_indx:
+            for x in ColsD[p]:
+                if x < len(F[p].table) and not (F[p].table[x] in ColsR[p]):
+                    return 0
+        print ">>>>> GOT HERE, should return 1 <<<<<"
+        return 1
 
 
     def synthesize_function(self, F):
@@ -94,15 +110,27 @@ class Closure(object):
         return f
                     
     
-    def Fix(self,F,FF):
+    def compute_sd_Fix(self,F,FF):
         '''Recursively compute the set FF of all unary functions that respect the partitions in optimal_sdf_subset
         @param F: the decomposed version of the unary function we are currently building
         @param FF: the collection of unary functions already built that respect all partitions in optimal_sdf_embedding.'''
-        i = Closure.get_short_index(F)
+        if self.has_sd_embedding==False:
+            self.compute_sd_embedding()
+        if len(F)==0:
+            # insert r new empty UnaryPolynomials into F
+            for k in range(len(self.optimal_sdf_subset)):
+                F.append(UnaryPolynomial(len(self.sd_embedding)))
+            i=0  # we will start by building up the 0-th member of F
+            print "F: ", F
+        else: 
+            # Otherwise, we work on building the shortest member of F
+            # Find out which one that is: 
+            print "calling get_short_index on F = ", F
+            i = Closure.get_short_index(F)
+            print "result is i = ", i
         
-        # if the tables of all functions in F are completely filled in, add this F (or rather, the function f 
-        # with decomposition F), to FF.
-        if (i==-1):
+        if (i==-1): # this means the tables of all functions in F are completely filled in.
+            # In this case, we add this F (or rather, the function f with decomposition F), to FF, and return.
             f = self.synthesize_function(F)
             if f==-1:
                 print "Error: the unary function f we expected could not be constructed"
@@ -110,16 +138,22 @@ class Closure(object):
             FF.append(f)
             return FF
         
-        # otherwise, continue building F
+        # otherwise, continue building up the shortest function in F (the one at index i)
         for k in range(F[i].domain):
             j = len(F[i].table)
             F[i].table.append(k)  # add k to position j of F[i]
-            # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions) 
+            print "j = ", j, " k = ", k
+            print "F: ", F
+
+            # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions)
+            value = self.in_range(F,i,j,k) 
+            print "self.in_range(F,i,j,k) returns", value 
             if self.in_range(F,i,j,k):
+                
                 # if so, leave it there and continue by recursion
-                return Closure.Fix(F,FF)
+                return self.compute_sd_Fix(F,FF)
             # otherwise, drop this k and continue (try k+1 next)
-                F[i].table.pop()
+            F[i].table.pop()
     
 
     @staticmethod
@@ -128,10 +162,10 @@ class Closure(object):
         answer = 0
         min_prog = 1
         for k in range(len(F)):
-            if not F[k].is_full():
-                if(F[k].progress()<min_prog):
-                    min_prog = F[k].progress()
-                    answer = k
+            print "F["+str(k)+"].progress() = ", F[k].progress()
+            if(F[k].progress()<min_prog):
+                min_prog = F[k].progress()
+                answer = k
         if min_prog==1:
             return -1  # this means all functions are full
         return answer
@@ -202,19 +236,20 @@ class Closure(object):
         return answer
 
     def compute_sd_embedding(self):
-        '''Return an array with (i,j) entry equal to the index of the block of pars[j] containing i.
-            So, for example, if
-                pars = |0,1|2,3|4,5|, |0,2|1,4|3,5|
-            then return
-                [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]]
-            See Also
+        '''Return an array with (i,j) entry equal to the index of the block of pars[j] containing i,
+        where pars is the set of partitions stored in optimal_sdf_subset.
+        So, for example, if pars = |0,1|2,3|4,5|, |0,2|1,4|3,5|
+        then this function should return [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]].
         '''
+        if self.has_optimal_sdf_subset == False:
+            self.compute_optimal_sdf_subset()
+        
         answer = []
-        n = self.partitions[0].universeSize()
+        n = self.optimal_sdf_subset[0].universeSize()
         for i in range(n):
             temp = []
-            for j in range(len(self.partitions)):
-                temp.append(self.partitions[j].blockIndex(i))
+            for j in range(len(self.optimal_sdf_subset)):
+                temp.append(self.optimal_sdf_subset[j].blockIndex(i))
             answer.append(temp)
         self.sd_embedding = answer
         self.has_sd_embedding = True
