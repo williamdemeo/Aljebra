@@ -63,7 +63,7 @@ class Test(unittest.TestCase):
 
     def test_decomp_size(self):
         fun_name = "decomp_size()"
-        test_cases = []  # list of which tests to run
+        test_cases = [0,1,3]  # list of which tests to run
 
         # NB: the correct_ans variables in the tests of decomp_size() are the values we expect to
         # be returned by decomp_size __for the given partitions__, not necessarily for the optimal 
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
             print "\n===== Testing", fun_name, "====="
 
             # ----Test 0----  
-            case_number = 0
+            case_number=0
             if case_number in test_cases:
                 correct_ans = (3**3) * (3**3)
                 print "\n--- Test", case_number, "---"
@@ -85,7 +85,7 @@ class Test(unittest.TestCase):
                 self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
         
             # ----Test 1----
-            case_number+=1
+            case_number=1
             if case_number in test_cases:
                 correct_ans = (4**4) * (3**3) *(4**4) * (2**2)
                 print "\n--- Test", case_number, "---"
@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
             # Skipping Example 2
         
             # ----Test 3----  
-            case_number+=1
+            case_number=3
             if case_number in test_cases:
                 correct_ans = (9**9)**6
                 print "\n--- Test", case_number, "---"
@@ -109,7 +109,7 @@ class Test(unittest.TestCase):
         
     def test_compute_sd_embedding(self):
         fun_name = "compute_sd_embedding()"
-        test_cases = []  # list of which tests to run
+        test_cases = [0,1]  # list of which tests to run
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -126,7 +126,7 @@ class Test(unittest.TestCase):
                 self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
 
             # ----Test 1----
-            case_number+=1
+            case_number = 1
             if case_number in test_cases:
                 correct_ans = [[0,0,0,0], [1,0,0,0], [1,0,1,0], [1,1,1,0], [1,1,2,0], [2,1,2,1], [2,2,3,1], [3,2,3,1], [3,2,0,1]]
                 print "\n--- Test", case_number, "---"
@@ -159,7 +159,7 @@ class Test(unittest.TestCase):
 
     def test_compute_optimal_sdf_subset(self):
         fun_name = "compute_optimal_sdf_subset()"
-        test_cases = []  # list of which tests to run
+        test_cases = [0,2,3,4]  # list of which tests to run
 
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -176,7 +176,7 @@ class Test(unittest.TestCase):
                 #self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
 
             # ----Test 1----  
-            case_number+=1
+            case_number=1
             if case_number in test_cases:
                 print "\n--- Test", case_number, "---"
                 cl = Closure(self.parts[case_number])
@@ -188,7 +188,7 @@ class Test(unittest.TestCase):
 
 
             # ----Test 2----  
-            case_number+=1
+            case_number=2
             if case_number in test_cases:
                 print "\n--- Test", case_number, "---"
                 cl = Closure(self.parts[case_number])
@@ -200,7 +200,7 @@ class Test(unittest.TestCase):
 
 
             # ----Test 3----  
-            case_number+=1
+            case_number=3
             if case_number in test_cases:
                 print "\n--- Test", case_number, "---"
                 cl = Closure(self.parts[case_number])
@@ -211,7 +211,7 @@ class Test(unittest.TestCase):
                 #self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
 
             # ----Test 4----  
-            case_number+=1
+            case_number=4
             if case_number in test_cases:
                 print "\n--- Test", case_number, "---"
                 cl = Closure(self.parts[case_number])

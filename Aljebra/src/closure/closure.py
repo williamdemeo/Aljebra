@@ -36,12 +36,12 @@ def debug_print(args):
     if Closure.GLOBAL_DEBUG:
         for m in args:
             print m,
-    print "\n"
+        print "\n"
 
 
 class Closure(object):
 
-    GLOBAL_DEBUG = True
+    GLOBAL_DEBUG = False
 
     def __init__(self, parts):
         self.partitions = parts
@@ -78,11 +78,10 @@ class Closure(object):
         if self.has_sd_embedding==False:
             self.compute_sd_embedding()
             
-        n = len(self.sd_embedding)
         r = len(F)
 
-        Dom = self.subarray(i,j)  # get those rows with j in the ith column
-        Ran = self.subarray(i,k)  # get those rows with k in the ith column
+        Dom = self.subarray(i,j)  # get those rows with j in column i
+        Ran = self.subarray(i,k)  # get those rows with k in column i
         
         # Putting the value k at position F[i][j] means the ith function in F maps j to k.
         # The set of rows of sd_embedding with j in column i must get mapped to 
@@ -121,6 +120,20 @@ class Closure(object):
         return f
                     
     
+    def isRespector(self, f):
+        '''Check whether the map F respects the remaining partitions in self.partitions.'''
+        n = len(f)
+        for p in self.partitions:
+            if p not in self.optimal_sdf_subset:
+                for x in range(n-1):
+                    u = f.table[x]
+                    rx = p.representative(x);
+                    for y in range(x+1,n):
+                        if (rx == p.representative(y)) and not p.isRelated(u, f.table[y]):
+                            return False
+        return True
+    
+
     def compute_sd_Fix(self,F,FF):
         '''Recursively compute the set FF of all unary functions that respect the partitions in optimal_sdf_subset
         @param F: the decomposed version of the unary function we are currently building
@@ -146,7 +159,8 @@ class Closure(object):
             if f==-1:
                 print "ERROR: the unary function f we expected could not be constructed"
                 return -1
-            FF.append(f)
+            if self.isRespector(f):
+                FF.append(f)
             return FF
         
         # otherwise, work on the shortest function in F (the one at index i)
