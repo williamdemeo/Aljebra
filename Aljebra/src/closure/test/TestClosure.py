@@ -84,7 +84,7 @@ class Test(unittest.TestCase):
                 print "    decomp size for this set of partitions:", ans
                 self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
         
-            # ----Test 1----  
+            # ----Test 1----
             case_number+=1
             if case_number in test_cases:
                 correct_ans = (4**4) * (3**3) *(4**4) * (2**2)
@@ -152,7 +152,7 @@ class Test(unittest.TestCase):
                 correct_ans = self.parts[case_number]
                 print "    cl.partitions = ", cl.partitions
                 FF = cl.compute_sd_Fix([], [])
-                print "    The unary polymorphisms are:", FF
+                print "    There are ", len(FF), " unary polymorphisms:", FF
                 #self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
 
 

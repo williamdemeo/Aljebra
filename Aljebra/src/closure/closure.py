@@ -28,16 +28,28 @@ class UnaryPolynomial:
         return str(self.table)
     def __repr__(self):
         return str(self)
-    
+    def __getitem__(self,i):
+        return self.table[i]
+        
+
+def debug_print(args):
+    if Closure.GLOBAL_DEBUG:
+        for m in args:
+            print m,
+    print "\n"
+
 
 class Closure(object):
+
+    GLOBAL_DEBUG = True
 
     def __init__(self, parts):
         self.partitions = parts
 
-        # sd_embedding will store the map from X to X/part_1 x X/part_2 x ... x X/part_r
-        # where part_1, ..., part_r are the partitions in optimal_sdf_subset 
-        # (not all the partitions in self.partitions) 
+        # sd_embedding stores the map from X to X/part_1 x X/part_2 x ... x X/part_r where part_1,...
+        # ..., part_r are the partitions in optimal_sdf_subset (not all partitions in self.partitions)
+        # Example: for partitions |0,1|2,3|4,5| and |0,2|1,4|3,5|, 
+        # sd_embedding is [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]] 
         self.sd_embedding = None  # will be an n x r array where X = {0, 1, ..., n-1}.
         self.has_sd_embedding = False
 
@@ -71,8 +83,8 @@ class Closure(object):
 
         Dom = self.subarray(i,j)  # get those rows with j in the ith column
         Ran = self.subarray(i,k)  # get those rows with k in the ith column
-        print "Dom: ", Dom
-        print "Ran: ", Ran
+        debug_print(["Dom: ",Dom])
+        debug_print(["Ran: ",Ran])
         
         # Putting the value k at position F[i][j] means the ith function in F maps j to k.
         # The set of rows of sd_embedding with j in column i must get mapped to 
@@ -86,25 +98,26 @@ class Closure(object):
             for x in ColsD[p]:
                 if x < len(F[p].table) and not (F[p].table[x] in ColsR[p]):
                     return 0
-        print ">>>>> GOT HERE, should return 1 <<<<<"
+        debug_print([">>>>> Returning 1 <<<<<"])
         return 1
 
 
     def synthesize_function(self, F):
         '''Given F, the decompositions of a function, return that function'''
-        if self.has_sd_embedding==False:
-            self.compute_sd_embedding()
+        # Don't need the next two lines.  (Couldn't get here without having an sd_embedding, I think.)
+        #if self.has_sd_embedding==False:
+        #   self.compute_sd_embedding()
         n = len(self.sd_embedding)
         r = len(F)
         f = [-1]*n
         y = [-1]*r
-        for k in range(n):
-            sde = self.sd_embedding[k]
+        for x in range(n):
+            sde = self.sd_embedding[x]
             for m in range(r):
-                y[m] = F[k][sde[m]]
+                y[m] = F[m].table[sde[m]]
             for i in range(n):
                 if (self.sd_embedding[i]==y):
-                    f[k] = i
+                    f[x] = i
         if -1 in f:
             return -1
         return f
@@ -119,42 +132,46 @@ class Closure(object):
         if len(F)==0:
             # insert r new empty UnaryPolynomials into F
             for k in range(len(self.optimal_sdf_subset)):
-                F.append(UnaryPolynomial(len(self.sd_embedding)))
+                # Fhe k-th unary polynomial is a map from the set {0, 1, ..., b-1} to itself,
+                # where b is the number of blocks of the k-th partition in optimal_sdf_subset:
+                F.append(UnaryPolynomial(self.optimal_sdf_subset[k].numberOfBlocks()))
             i=0  # we will start by building up the 0-th member of F
-            print "F: ", F
+            debug_print(["F: ",F])
         else: 
-            # Otherwise, we work on building the shortest member of F
+            # Otherwise, we build up the shortest member of F
             # Find out which one that is: 
-            print "calling get_short_index on F = ", F
             i = Closure.get_short_index(F)
-            print "result is i = ", i
         
         if (i==-1): # this means the tables of all functions in F are completely filled in.
             # In this case, we add this F (or rather, the function f with decomposition F), to FF, and return.
             f = self.synthesize_function(F)
             if f==-1:
-                print "Error: the unary function f we expected could not be constructed"
+                debug_print(["Error: the unary function f we expected could not be constructed"])
                 return -1
+            debug_print(["    FF: ",FF])
+            debug_print(["    Appending f = ",f])
             FF.append(f)
+            debug_print(["    FF: ",FF])
             return FF
         
         # otherwise, continue building up the shortest function in F (the one at index i)
         for k in range(F[i].domain):
             j = len(F[i].table)
             F[i].table.append(k)  # add k to position j of F[i]
-            print "j = ", j, " k = ", k
-            print "F: ", F
+            debug_print(["j = "+str(j)+ " k = "+ str(k)])
+            debug_print(["F: ",F])
 
             # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions)
             value = self.in_range(F,i,j,k) 
-            print "self.in_range(F,i,j,k) returns", value 
-            if self.in_range(F,i,j,k):
-                
+            debug_print(["self.in_range(F,i,j,k) returns "+str(value)+ " If 1, Next line should say: self.in_range..."]) 
+            if value:
+                debug_print(["self.in_range(F,i,j,k) returns"+str(value)]) 
                 # if so, leave it there and continue by recursion
-                return self.compute_sd_Fix(F,FF)
+                debug_print(["calling self.compute_sd_Fix({0}, {1})".format(F, FF)])
+                FF = self.compute_sd_Fix(F,FF)
             # otherwise, drop this k and continue (try k+1 next)
             F[i].table.pop()
-    
+        return FF
 
     @staticmethod
     def get_short_index(F):
@@ -162,7 +179,7 @@ class Closure(object):
         answer = 0
         min_prog = 1
         for k in range(len(F)):
-            print "F["+str(k)+"].progress() = ", F[k].progress()
+            debug_print(["F["+str(k)+"].progress() = "+str(F[k].progress())])
             if(F[k].progress()<min_prog):
                 min_prog = F[k].progress()
                 answer = k
