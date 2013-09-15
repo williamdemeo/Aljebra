@@ -83,8 +83,6 @@ class Closure(object):
 
         Dom = self.subarray(i,j)  # get those rows with j in the ith column
         Ran = self.subarray(i,k)  # get those rows with k in the ith column
-        debug_print(["Dom: ",Dom])
-        debug_print(["Ran: ",Ran])
         
         # Putting the value k at position F[i][j] means the ith function in F maps j to k.
         # The set of rows of sd_embedding with j in column i must get mapped to 
@@ -146,31 +144,24 @@ class Closure(object):
             # In this case, we add this F (or rather, the function f with decomposition F), to FF, and return.
             f = self.synthesize_function(F)
             if f==-1:
-                debug_print(["Error: the unary function f we expected could not be constructed"])
+                print "ERROR: the unary function f we expected could not be constructed"
                 return -1
-            debug_print(["    FF: ",FF])
-            debug_print(["    Appending f = ",f])
             FF.append(f)
-            debug_print(["    FF: ",FF])
             return FF
         
-        # otherwise, continue building up the shortest function in F (the one at index i)
+        # otherwise, work on the shortest function in F (the one at index i)
         for k in range(F[i].domain):
             j = len(F[i].table)
             F[i].table.append(k)  # add k to position j of F[i]
-            debug_print(["j = "+str(j)+ " k = "+ str(k)])
             debug_print(["F: ",F])
 
             # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions)
-            value = self.in_range(F,i,j,k) 
-            debug_print(["self.in_range(F,i,j,k) returns "+str(value)+ " If 1, Next line should say: self.in_range..."]) 
-            if value:
-                debug_print(["self.in_range(F,i,j,k) returns"+str(value)]) 
+            if self.in_range(F,i,j,k):
                 # if so, leave it there and continue by recursion
-                debug_print(["calling self.compute_sd_Fix({0}, {1})".format(F, FF)])
                 FF = self.compute_sd_Fix(F,FF)
             # otherwise, drop this k and continue (try k+1 next)
             F[i].table.pop()
+
         return FF
 
     @staticmethod
