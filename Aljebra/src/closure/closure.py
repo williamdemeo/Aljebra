@@ -7,6 +7,13 @@ from org.uacalc.io import AlgebraIO
 from org.uacalc.alg.op import Operation
 from org.uacalc.alg import BasicAlgebra
 
+
+class ClosureIndexError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+    
 class UnaryPolynomial:
     '''A simple class for representing a unary function'''
     def __init__(self, n=0):
@@ -39,31 +46,42 @@ def debug_print(args):
         print "\n"
 
 
+
 class Closure(object):
 
     GLOBAL_DEBUG = False
 
     def __init__(self, parts):
+
         self.partitions = parts
 
-        # sd_embedding stores the map from X to X/part_1 x X/part_2 x ... x X/part_r where part_1,...
+        self.universe_size = parts[0].universeSize()
+
+        # sd_embedding: the map from X to X/part_1 x X/part_2 x ... x X/part_r where part_1,...
         # ..., part_r are the partitions in optimal_sdf_subset (not all partitions in self.partitions)
         # Example: for partitions |0,1|2,3|4,5| and |0,2|1,4|3,5|, 
         # sd_embedding is [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]] 
         self.sd_embedding = None  # will be an n x r array where X = {0, 1, ..., n-1}.
         self.has_sd_embedding = False
 
-        # optimal_sdf_subset will store the partitions that should be used in the decomposition
+        # optimal_sdf_subset: the partitions that should be used in the decomposition
         self.optimal_sdf_subset = None
         self.has_optimal_sdf_subset = False
 
-        # Inv will store the partitions in the closure
+        # nonoptimal_idemdecs: partitions in self.partitions that are not in optimal_sdf_subset.
+        # N.B. this field stores paritions in their idemdec representation.
+        self.nonoptimal_idemdecs = None
+        self.has_nonoptimal_idemdecs = False
+        
+        # Inv: the partitions in the closure
         self.Inv = None
         self.has_Inv = False
 
         # Fix will store the unary functions that respect all partitions in self.partitions 
         self.Fix = None
         self.has_Fix = False
+
+
 
     def subarray(self, i,j):
         ''' return the rows of the sd_embedding that have a j in the ith column'''
@@ -100,11 +118,12 @@ class Closure(object):
 
 
     def synthesize_function(self, F):
-        '''Given F, the decompositions of a function, return that function'''
+        '''Return the function f that has subdirectly decomposed representation F'''
         # Don't need the next two lines.  (Couldn't get here without having an sd_embedding, I think.)
         #if self.has_sd_embedding==False:
         #   self.compute_sd_embedding()
-        n = len(self.sd_embedding)
+        # n = len(self.sd_embedding)
+        n = self.universe_size
         r = len(F)
         f = [-1]*n
         y = [-1]*r
@@ -122,7 +141,8 @@ class Closure(object):
     
     def isRespector(self, f):
         '''Check whether the map F respects the remaining partitions in self.partitions.'''
-        n = len(f)
+        # n = len(f)
+        n = self.universe_size
         for p in self.partitions:
             if p not in self.optimal_sdf_subset:
                 for x in range(n-1):
@@ -134,6 +154,43 @@ class Closure(object):
         return True
     
 
+    def get_vector_value(self, F, s):
+        '''Return [ F[0][s[0]], F[1][s[1]], ..., F[r][s[r]] ]'''
+        ans = []
+        assert len(F)==len(s)
+        for i in range(len(F)):
+            if len(F[i].table) <= s[i]:
+                raise ClosureIndexError("F["+str(i)+"][x] not defined for x="+str(s[i]))
+            else:
+                ans.append(F[i].table[s[i]])
+        return ans
+    
+    
+    def respects_nonoptimal_idemdecs(self, F):
+        
+        if self.has_nonoptimal_idemdecs:
+            for t in self.nonoptimal_idemdecs:
+                for x in range(self.universe_size):
+                    s = self.sd_embedding[x]
+                    y = self.sd_embedding[t[x]]
+                    try:
+                        # F is [F[0], F[1], ..., F[r-1]], a decomposed version of a function f on X.
+                        u = self.get_vector_value(F,s)  # the sde of f(x)
+                        v = self.get_vector_value(F,y)  # the sde of f(t(x)) 
+                        inv_u = self.sd_embedding.index(u)  # the inverse of the sde of f(x)
+                        inv_v = self.sd_embedding.index(v)  # the inverse of the sde of f(t(x))
+
+                        if not t[inv_u]==t[inv_v]:
+                            # t(f(t(x))) is not equal to t(f(x)) then f doesn't respect t:
+                            return False
+                    
+                    except ClosureIndexError as e:
+                        debug_print(e)
+
+        return True
+                    
+    
+    
     def compute_sd_Fix(self,F,FF):
         '''Recursively compute the set FF of all unary functions that respect the partitions in optimal_sdf_subset
         @param F: the decomposed version of the unary function we are currently building
@@ -159,8 +216,12 @@ class Closure(object):
             if f==-1:
                 print "ERROR: the unary function f we expected could not be constructed"
                 return -1
-            if self.isRespector(f):
-                FF.append(f)
+
+            # no longer need this, since our in_range function now does all the work (tests all partitions respected)
+            # if self.isRespector(f):
+                # FF.append(f)
+
+            FF.append(f)
             return FF
         
         # otherwise, work on the shortest function in F (the one at index i)
@@ -169,8 +230,9 @@ class Closure(object):
             F[i].table.append(k)  # add k to position j of F[i]
             debug_print(["F: ",F])
 
-            # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions)
-            if self.in_range(F,i,j,k):
+            # check if this is okay (i.e. whether F[i].table[j] = k allows preserving partitions
+            # in optimal_sdf_subset and respects other paritions as well)
+            if self.in_range(F,i,j,k) and self.respects_nonoptimal_idemdecs(F):
                 # if so, leave it there and continue by recursion
                 FF = self.compute_sd_Fix(F,FF)
             # otherwise, drop this k and continue (try k+1 next)
@@ -247,6 +309,15 @@ class Closure(object):
             ans = ans.meet(p)
         return ans
 
+
+    @staticmethod    
+    def partition2idemdec(p):
+        n = p.universeSize()
+        ans = [-1]*n
+        for x in range(n):
+            ans[x] = p.representative(x)
+        return ans
+
     @staticmethod
     def decomp_size(pars):
         '''Return a^a * b^b * c^c *... where a, b, c,... are the numbers of blocks in
@@ -271,7 +342,8 @@ class Closure(object):
         for i in range(n):
             temp = []
             for j in range(len(self.optimal_sdf_subset)):
-                temp.append(self.optimal_sdf_subset[j].blockIndex(i))
+                blkindx = self.optimal_sdf_subset[j].blockIndex(i)
+                temp.append(blkindx)
             answer.append(temp)
         self.sd_embedding = answer
         self.has_sd_embedding = True
@@ -304,4 +376,17 @@ class Closure(object):
                         d_size = temp
         self.optimal_sdf_subset=answer
         self.has_optimal_sdf_subset=True
+
+        # The self.partitions that are not in optimal_sdf_subset:
+        nonopts = [p for p in self.partitions if p not in answer]
+        if len(nonopts) > 0:
+            self.has_nonoptimal_idemdecs=True
+            # store the idemdec representations:
+            self.nonoptimal_idemdecs = []
+            for p in nonopts:
+                self.nonoptimal_idemdecs.append(Closure.partition2idemdec(p))
+
         return answer
+            
+    
+    
