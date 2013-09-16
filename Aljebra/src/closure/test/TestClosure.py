@@ -78,8 +78,11 @@ class Test(unittest.TestCase):
 
     def test_decomp_size(self):
         fun_name = "decomp_size()"
-        #test_cases = [0,1,3]  # list of which tests to run
-        test_cases = []  # list of which tests to run
+
+        # Which examples to test:
+        #test_cases = [0,1,3]
+        test_cases = []  # (run no tests)
+
         correct_answer = {0: (3**3) * (3**3), 1: (4**4) * (3**3) *(4**4) * (2**2), 3: (9**9)**6 }
         # NB: the correct_answers are the values we expect to be returned by decomp_size 
         # __for the given partitions__, not necessarily for the optimal set of partitions 
@@ -97,7 +100,10 @@ class Test(unittest.TestCase):
         
     def test_compute_sd_embedding(self):
         fun_name = "compute_sd_embedding()"
-        test_cases = []  # list of which tests to run
+
+        # Which examples to test:
+        test_cases = []  # (run no tests)
+        
         correct_answer = {0: [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]], 1: [[0,0,0,0], [1,0,0,0], [1,0,1,0], [1,1,1,0], [2,1,2,0], [2,1,2,1], [2,2,3,1], [3,2,3,1], [3,2,0,1]]}
         
         if len(test_cases)>0:
@@ -114,14 +120,18 @@ class Test(unittest.TestCase):
 
     def test_compute_optimal_sdf_subset(self):
         fun_name = "compute_optimal_sdf_subset()"
-        #test_cases = [0,1]  # list of which tests to run
-        test_cases = [4, 3]  # list of which tests to run
+
+        # Which examples to test:
+        test_cases = [4,5]  
+        #test_cases = [0,1]
+
         p30 = self.parts[3][0].join(self.parts[3][1])
         p31 = self.parts[3][3].join(self.parts[3][4])
         correct_answer = {0: self.parts[0],
                           1: self.parts[1], 
                           3: (p30, p31), 
-                          4: (self.parts[4][0], self.parts[4][1])}
+                          4: (self.parts[4][0], self.parts[4][1]),
+                          5: (self.parts[5][0], self.parts[5][1])}
 
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -140,9 +150,11 @@ class Test(unittest.TestCase):
 
     def test_compute_sd_Fix(self):
         fun_name = "compute_sd_Fix()"
-        #test_cases = [0,1,3,4,5]  # list of which tests to run
-        test_cases = [3]  # list of which tests to run
-        #test_cases = []  # list of which tests to run
+
+        # Which examples to test:
+        test_cases = [4,5]  
+        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        #test_cases = [] # (run no tests)
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -151,18 +163,22 @@ class Test(unittest.TestCase):
                 print "\n--- Test", case_number, "---"
                 partitions = self.parts[case_number]
                 #correct_ans = BasicPartition.unaryPolymorphisms(partitions, None)
-#                 correct_ans = []
-#                 A = BasicPartition.unaryPolymorphismsAlgebra(partitions)
-#                 ops = A.operations()
-#                 for op in ops:
-#                     correct_ans.append(asList(op.getTable()))
+                correct_ans = []
+                if not case_number==3:  # case 3 takes too long to compute the old way
+                    A = BasicPartition.unaryPolymorphismsAlgebra(partitions)
+                    ops = A.operations()
+                    for op in ops:
+                        correct_ans.append(asList(op.getTable()))
+
                 cl = Closure(partitions)
                 print "    cl.partitions = ", cl.partitions
                 FF = cl.compute_sd_Fix([], [])
-                print "    There are ", len(FF), " unary polymorphisms:", FF
-#                 print "CORRECT ANS:"
-#                 print "    There are ", len(correct_ans), "unary polymorphisms:", correct_ans
-#                 self.assertEquals(sorted(FF), sorted(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
+                print "    There are ", len(FF), " unary polymorphisms",
+                if not case_number == 3:
+                    print FF
+                    print "CORRECT ANS:"
+                    print "    There are ", len(correct_ans), "unary polymorphisms:", correct_ans
+                    self.assertEquals(sorted(FF), sorted(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
 
 if __name__ == "__main__":
