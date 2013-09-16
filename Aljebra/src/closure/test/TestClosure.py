@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
         
     def test_compute_sd_embedding(self):
         fun_name = "compute_sd_embedding()"
-        test_cases = [1]  # list of which tests to run
+        test_cases = []  # list of which tests to run
         correct_answer = {0: [[0,0], [0,1], [1,0], [1,2], [2,1], [2,2]], 1: [[0,0,0,0], [1,0,0,0], [1,0,1,0], [1,1,1,0], [2,1,2,0], [2,1,2,1], [2,2,3,1], [3,2,3,1], [3,2,0,1]]}
         
         if len(test_cases)>0:
@@ -112,9 +112,36 @@ class Test(unittest.TestCase):
                 self.assertEquals(ans, correct_answer[case_number], "Test "+str(case_number)+": " + fun_name + "seems broken")
 
 
+    def test_compute_optimal_sdf_subset(self):
+        fun_name = "compute_optimal_sdf_subset()"
+        #test_cases = [0,1]  # list of which tests to run
+        test_cases = [4, 3]  # list of which tests to run
+        p30 = self.parts[3][0].join(self.parts[3][1])
+        p31 = self.parts[3][3].join(self.parts[3][4])
+        correct_answer = {0: self.parts[0],
+                          1: self.parts[1], 
+                          3: (p30, p31), 
+                          4: (self.parts[4][0], self.parts[4][1])}
+
+        if len(test_cases)>0:
+            print "\n===== Testing", fun_name, "====="
+
+            for case_number in test_cases:
+                print "\n--- Test", case_number, "---"
+                cl = Closure(self.parts[case_number])
+                print "    cl.partitions = ", cl.partitions
+                ans = cl.compute_optimal_sdf_subset()
+                print "    The optimal sdf subset is:", ans
+                print "        ==> decomposition size:", Closure.decomp_size(ans)
+                print "    The correct answer is:", correct_answer[case_number]
+                print "        ==> decomposition size:", Closure.decomp_size(correct_answer[case_number])
+                self.assertEquals(sorted(ans), sorted(correct_answer[case_number]), "Test "+str(case_number)+": " + fun_name + "seems broken")
+
+
     def test_compute_sd_Fix(self):
         fun_name = "compute_sd_Fix()"
-        test_cases = [0,1,4,5]  # list of which tests to run
+        #test_cases = [0,1,3,4,5]  # list of which tests to run
+        test_cases = [3]  # list of which tests to run
         #test_cases = []  # list of which tests to run
         
         if len(test_cases)>0:
@@ -124,75 +151,18 @@ class Test(unittest.TestCase):
                 print "\n--- Test", case_number, "---"
                 partitions = self.parts[case_number]
                 #correct_ans = BasicPartition.unaryPolymorphisms(partitions, None)
-                correct_ans = []
-                A = BasicPartition.unaryPolymorphismsAlgebra(partitions)
-                ops = A.operations()
-                for op in ops:
-                    correct_ans.append(asList(op.getTable()))
+#                 correct_ans = []
+#                 A = BasicPartition.unaryPolymorphismsAlgebra(partitions)
+#                 ops = A.operations()
+#                 for op in ops:
+#                     correct_ans.append(asList(op.getTable()))
                 cl = Closure(partitions)
                 print "    cl.partitions = ", cl.partitions
                 FF = cl.compute_sd_Fix([], [])
                 print "    There are ", len(FF), " unary polymorphisms:", FF
-                print "CORRECT ANS:"
-                print "    There are ", len(correct_ans), "unary polymorphisms:", correct_ans
-                self.assertEquals(sorted(FF), sorted(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
-
-
-    def test_compute_optimal_sdf_subset(self):
-        fun_name = "compute_optimal_sdf_subset()"
-        #test_cases = [0,1]  # list of which tests to run
-        test_cases = []  # list of which tests to run
-
-        if len(test_cases)>0:
-            print "\n===== Testing", fun_name, "====="
-
-            for case_number in test_cases:
-                print "\n--- Test", case_number, "---"
-                cl = Closure(self.parts[case_number])
-                correct_ans = self.parts[case_number]
-                print "    cl.partitions = ", cl.partitions
-                ans = cl.compute_optimal_sdf_subset()
-                print "    The optimal sdf subset is:", ans
-                print "    The correct answer is:", correct_ans
-                self.assertEquals(set(ans), set(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
-
-
-            # ----Test 2----  
-            case_number=2
-            if case_number in test_cases:
-                print "\n--- Test", case_number, "---"
-                cl = Closure(self.parts[case_number])
-                #correct_ans = self.parts[case_number]
-                print "    cl.partitions = ", cl.partitions
-                ans = cl.compute_optimal_sdf_subset()
-                print "    The optimal sdf subset is:", ans
-                #self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
-
-
-            # ----Test 3----  
-            case_number=3
-            if case_number in test_cases:
-                print "\n--- Test", case_number, "---"
-                cl = Closure(self.parts[case_number])
-                #correct_ans = self.parts[case_number]
-                print "    cl.partitions = ", cl.partitions
-                ans = cl.compute_optimal_sdf_subset()
-                print "    The optimal sdf subset is:", ans
-                #self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
-
-            # ----Test 4----  
-            case_number=4
-            if case_number in test_cases:
-                print "\n--- Test", case_number, "---"
-                cl = Closure(self.parts[case_number])
-                correct_ans = self.parts[case_number][0], self.parts[case_number][1]
-                print "    cl.partitions = ", cl.partitions
-                ans = cl.compute_optimal_sdf_subset()
-                print "    The optimal sdf subset is :", ans
-                #print "    The expected sdf subset is:", correct_ans
-                self.assertEquals(ans, correct_ans, "Test "+str(case_number)+": " + fun_name + "seems broken")
-
-
+#                 print "CORRECT ANS:"
+#                 print "    There are ", len(correct_ans), "unary polymorphisms:", correct_ans
+#                 self.assertEquals(sorted(FF), sorted(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
 
 if __name__ == "__main__":
