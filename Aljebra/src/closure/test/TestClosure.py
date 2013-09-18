@@ -4,6 +4,7 @@ Created on Jul 15, 2013
 @author: williamdemeo
 '''
 import unittest
+import inspect  # for getting name of current function
 from org.uacalc.alg.conlat import BasicPartition
 from closure.closure import Closure
 from json.tests.test_encode_basestring_ascii import CASES
@@ -149,7 +150,8 @@ class Test(unittest.TestCase):
 
 
     def test_compute_sd_Fix(self):
-        fun_name = "compute_sd_Fix()"
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
         test_cases = [4,5]  
@@ -179,8 +181,42 @@ class Test(unittest.TestCase):
                     print "CORRECT ANS:"
                     print "    There are ", len(correct_ans), "unary polymorphisms:", correct_ans
                     self.assertEquals(sorted(FF), sorted(correct_ans), "Test "+str(case_number)+": " + fun_name + "seems broken")
+                else:
+                    print "\n"
 
+    def test_basic_algebra_from_unary_polymorphisms(self):
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
 
+        # Which examples to test:
+        test_cases = [0,1]  
+        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        #test_cases = [] # (run no tests)
+        
+        if len(test_cases)>0:
+            print "\n===== Testing", fun_name, "====="
+
+            for case_number in test_cases:
+                print "\n--- Test", case_number, "---"
+
+                partitions = self.parts[case_number]
+                cl = Closure(partitions)
+                print "    cl.partitions = ", cl.partitions
+
+                FF = cl.compute_sd_Fix([], [])
+                A = cl.basic_algebra_from_unary_polymorphisms(FF)
+                print "Created algebra with universe: ", A.universe()
+
+                if not case_number==3:  # case 3 takes too long to compute the old way
+                    correct_ans = BasicPartition.unaryPolymorphismsAlgebra(partitions)
+                    print "Correct algebra has universe: ", correct_ans.universe()
+                    self.assertEquals(A.universe(), correct_ans.universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
+                
+                # compute congruence lattices, check they are equal to each other and to original set of partitions
+                print "|ConA| = ", len(A.con().universe())
+                print A.con().universe()
+
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

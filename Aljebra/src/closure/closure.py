@@ -4,7 +4,8 @@
 from org.uacalc.alg.conlat import BasicPartition
 from itertools import combinations
 from org.uacalc.io import AlgebraIO
-from org.uacalc.alg.op import Operation
+from OperationFactory import Operation
+#from org.uacalc.alg.op import Operation
 from org.uacalc.alg import BasicAlgebra
 
 
