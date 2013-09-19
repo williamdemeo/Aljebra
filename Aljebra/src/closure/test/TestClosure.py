@@ -189,7 +189,8 @@ class Test(unittest.TestCase):
         fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
-        test_cases = [0,1]  
+        #test_cases = [0,1,4,5]  # these all passed  
+        test_cases = [3]
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         #test_cases = [] # (run no tests)
         
@@ -205,16 +206,20 @@ class Test(unittest.TestCase):
 
                 FF = cl.compute_sd_Fix([], [])
                 A = cl.basic_algebra_from_unary_polymorphisms(FF)
-                print "Created algebra with universe: ", A.universe()
+                print "Created algebra A with universe: ", A.universe()
+                # compute congruence lattices, check they are equal to each other and to original set of partitions
+                print "|ConA| = ", len(A.con().universe())
+                print "ConA = ", A.con().universe()
+
 
                 if not case_number==3:  # case 3 takes too long to compute the old way
                     correct_ans = BasicPartition.unaryPolymorphismsAlgebra(partitions)
-                    print "Correct algebra has universe: ", correct_ans.universe()
+                    print "Correct algebra B has universe: ", correct_ans.universe()
+                    print "|ConB| = ", len(correct_ans.con().universe())
+                    print "ConB = ", correct_ans.con().universe()
+
                     self.assertEquals(A.universe(), correct_ans.universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
-                
-                # compute congruence lattices, check they are equal to each other and to original set of partitions
-                print "|ConA| = ", len(A.con().universe())
-                print A.con().universe()
+                    self.assertEquals(A.con().universe(), correct_ans.con().universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
         
 if __name__ == "__main__":
