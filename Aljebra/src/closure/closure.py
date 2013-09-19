@@ -8,7 +8,6 @@ from OperationFactory import Operation
 #from org.uacalc.alg.op import Operation
 from org.uacalc.alg import BasicAlgebra
 
-
 class ClosureIndexError(Exception):
     def __init__(self, value):
         self.value = value
@@ -388,6 +387,57 @@ class Closure(object):
                 self.nonoptimal_idemdecs.append(Closure.partition2idemdec(p))
 
         return answer
+
+    
+    @staticmethod
+    def all_partitions(n):
+        X = BasicAlgebra("Eqn", n, [])
+        return X.con()
+
+    
+    @staticmethod
+    def bell_number(n):
+        '''Bell(n) gives the number of partitions of an n-element set.
+        For now we're hard coding it.  We'll fix this later.'''
+        correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
+        return correct_answer[n]
+    
+
+    def isClosed(self, M7):
+        pass
+    
+    
+    def get_Closed_M7s(self,N):
+        '''Find all spanning M7 sublattices of Eq(N) and return those that are closed.'''
+        # First get all partitions on N element set.
+        self.EqN = Closure.all_partitions(N)
+        M7s = self.get_M7s_aux([], [],  N)
+        return [M7 for M7 in M7s if self.isClosed(M7)]
+
+    def get_M7s_aux(self, M7Can, M7s, N):
+
+        lenM7C = len(M7Can)
+
+        if lenM7C == 7:
+            return M7s + (M7Can, )
+        
+        if lenM7C > 0:
+            first = M7Can[-1]
+        else:
+            first = 1
             
+        last = Closure.bell_number(N) - (7 - lenM7C)
+        
+        for k in range(first, last+1):
+            reps = True
+            for j in range(lenM7C):
+                if not join(M7Can[j], k)==BasicPartition.zero(i)
+
     
     
+
+        
+
+
+
+

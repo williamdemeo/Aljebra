@@ -9,6 +9,7 @@ from org.uacalc.alg.conlat import BasicPartition
 from closure.closure import Closure
 from json.tests.test_encode_basestring_ascii import CASES
 from compiler.transformer import asList
+from org.uacalc.alg import BasicAlgebra
 
 class Test(unittest.TestCase):
 
@@ -123,7 +124,7 @@ class Test(unittest.TestCase):
         fun_name = "compute_optimal_sdf_subset()"
 
         # Which examples to test:
-        test_cases = [4,5]  
+        test_cases = []  
         #test_cases = [0,1]
 
         p30 = self.parts[3][0].join(self.parts[3][1])
@@ -154,7 +155,7 @@ class Test(unittest.TestCase):
         fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
-        test_cases = [4,5]  
+        test_cases = []  
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         #test_cases = [] # (run no tests)
         
@@ -190,8 +191,7 @@ class Test(unittest.TestCase):
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = [3]
-        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         #test_cases = [] # (run no tests)
         
         if len(test_cases)>0:
@@ -220,6 +220,71 @@ class Test(unittest.TestCase):
 
                     self.assertEquals(A.universe(), correct_ans.universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
                     self.assertEquals(A.con().universe(), correct_ans.con().universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
+
+        
+    def test_bell_number(self):
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
+
+        # We will compute Eq(n) for n in the following list:
+        #test_cases = range(1,11)
+        test_cases = []
+        correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
+
+        if len(test_cases)>0:
+            print "\n===== Testing", fun_name, "====="
+
+            for case_number in test_cases:
+                print "\n--- Test", case_number, "---"
+
+                self.assertEquals(correct_answer[case_number], Closure.bell_number(case_number), "Test "+str(case_number)+": " + fun_name + "seems broken")
+
+        
+    def test_get_all_partitions(self):
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
+
+        # We will compute Eq(n) for n in the following list:
+        test_cases = []
+
+        if len(test_cases)>0:
+            print "\n===== Testing", fun_name, "====="
+
+            for case_number in test_cases:
+                print "\n--- Test", case_number, "---"
+                Eqn = Closure.get_all_partitions(case_number)
+                print "Created Eq("+str(case_number)+") with universe: ", Eqn.universe()
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
 
         
 if __name__ == "__main__":
