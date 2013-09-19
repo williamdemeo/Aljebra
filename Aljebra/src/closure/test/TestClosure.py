@@ -7,7 +7,6 @@ import unittest
 import inspect  # for getting name of current function
 from org.uacalc.alg.conlat import BasicPartition
 from closure.closure import Closure
-from json.tests.test_encode_basestring_ascii import CASES
 from compiler.transformer import asList
 
 class Test(unittest.TestCase):
@@ -123,7 +122,7 @@ class Test(unittest.TestCase):
         fun_name = "compute_optimal_sdf_subset()"
 
         # Which examples to test:
-        test_cases = [4,5]  
+        test_cases = []  
         #test_cases = [0,1]
 
         p30 = self.parts[3][0].join(self.parts[3][1])
@@ -154,9 +153,9 @@ class Test(unittest.TestCase):
         fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
-        test_cases = [4,5]  
-        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
-        #test_cases = [] # (run no tests)
+        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 
+        # This will take about an hour to finish, but seems to work; computes 855625 unary polymorphisms.  
+        test_cases = [] # (run no tests)
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -189,8 +188,7 @@ class Test(unittest.TestCase):
         fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
-        #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = [3]
+        test_cases = [0,1,4,5]  # these all passed  
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         #test_cases = [] # (run no tests)
         
