@@ -7,7 +7,9 @@ import unittest
 import inspect  # for getting name of current function
 from org.uacalc.alg.conlat import BasicPartition
 from closure.closure import Closure
+from json.tests.test_encode_basestring_ascii import CASES
 from compiler.transformer import asList
+from org.uacalc.alg import BasicAlgebra
 
 class Test(unittest.TestCase):
 
