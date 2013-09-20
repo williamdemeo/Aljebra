@@ -116,6 +116,18 @@ class Closure(object):
         debug_print([">>>>> Returning 1 <<<<<"])
         return 1
 
+    @staticmethod
+    def bell_number(n):
+        '''Bell(n) gives the number of partitions of an n-element set.
+        For now we're hard coding it.  We'll fix this later.'''
+        correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
+        return correct_answer[n]
+    
+    @staticmethod
+    def all_partitions(n):
+        X = BasicAlgebra("Eqn", n, [])
+        return X.con()
+
 
     def synthesize_function(self, F):
         '''Return the function f that has subdirectly decomposed representation F'''
@@ -449,17 +461,6 @@ class Closure(object):
         return answer
 
 
-
-def bell_number(n):
-    '''Bell(n) gives the number of partitions of an n-element set.
-    For now we're hard coding it.  We'll fix this later.'''
-    correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
-    return correct_answer[n]
-    
-
-def all_partitions(n):
-    X = BasicAlgebra("Eqn", n, [])
-    return X.con()
 
 
 class M7Search(object):
