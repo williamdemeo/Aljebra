@@ -78,8 +78,8 @@ class Closure(object):
         self.has_Inv = False
 
         # Fix will store the unary functions that respect all partitions in self.partitions 
-        self.Fix = None
-        self.has_Fix = False
+#         self.Fix = None
+#         self.has_Fix = False
 
 
 
@@ -140,7 +140,8 @@ class Closure(object):
                     
     
     def isRespector(self, f):
-        '''Check whether the map F respects the remaining partitions in self.partitions.'''
+        '''Check whether the map F respects the remaining partitions in self.partitions.
+        (we're no longer using this).'''
         # n = len(f)
         n = self.universe_size
         for p in self.partitions:
@@ -189,7 +190,6 @@ class Closure(object):
 
         return True
                     
-    
     
     def compute_sd_Fix(self,F,FF):
         '''Recursively compute the set FF of all unary functions that respect the partitions in optimal_sdf_subset
@@ -254,6 +254,66 @@ class Closure(object):
             return -1  # this means all functions are full
         return answer
             
+
+    def respects(self,F,h):
+        '''Check whether each function in a set (F) respects a partial function (h).
+        INPUT
+               F: a list of unary functions on {0, 1, ..., N-1}, for some integer N.
+                   e.g., the list [[0,1,2,3], [0,1,1,0]] represents:
+                     the identity function f(x) = x, and
+                     the map f(0)=0, f(1)=1, f(2)=1, f(3)=0
+
+               h: a partition given as a function;
+                  e.g. h=partition_to_function([[0,1,2],[3,5],[4,6]])
+
+        OUTPUT
+               True:  if each function (in F) respects the partition (h).
+               False: otherwise
+        '''
+        n = len(h)
+        for f in F:
+            for x in range(n):
+                fx = f[x]
+                fhx = f[h[x]]
+
+                # Test whether f respects h.
+                # (Recall, f respects h if and only if h(f(h(x)) = h(f(x)) for all x.)
+                if fx<n and fhx<n and h[fhx]!=h[fx]: 
+                    return False
+            
+        return True
+
+    def Inv(self, p, P, F):
+        '''Recursively build the list of all functions (representing partitions) that are
+        respected by all functions in F.
+
+        INPUT
+                p: candidate partial function from a subset of {0, 1, ..., N-1} into {0, 1, ..., N-1}
+                   that is known to be, so far, respected by each function in F, and also has the idemdec
+                   properties:  p(x) <= x and p(p(x)) = p(x)
+                   (a partial function because this routine recursively builds each function p)
+                P: list of functions (representing partitions of {0, 1, ..., N-1}) that are known to
+                   respect all functions in F.
+                F: list of unary functions on {0, 1, ..., N-1}, for some integer N.
+
+        OUTPUT
+               P: list of idemdec functions representing all partitions respected by the functions in F.
+        '''
+        n = len(p)
+        if n==len(F[0]):
+            P.append(p)
+            return P
+        for x in range(n+1):
+            if x==n or x==p[x]:
+                b = p+[x]
+                if respects(F,b):
+                    P = Inv(F,P,b)
+        return P
+
+
+
+
+
             
     @staticmethod
     def slow_closure(p):
@@ -388,29 +448,41 @@ class Closure(object):
 
         return answer
 
-    
-    @staticmethod
-    def all_partitions(n):
-        X = BasicAlgebra("Eqn", n, [])
-        return X.con()
 
+
+def bell_number(n):
+    '''Bell(n) gives the number of partitions of an n-element set.
+    For now we're hard coding it.  We'll fix this later.'''
+    correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
+    return correct_answer[n]
     
-    @staticmethod
-    def bell_number(n):
-        '''Bell(n) gives the number of partitions of an n-element set.
-        For now we're hard coding it.  We'll fix this later.'''
-        correct_answer = {1: 1, 2: 2, 3: 5, 4: 15, 5: 52, 6: 203, 7: 877, 8: 4140, 9: 21147, 10: 115975}
-        return correct_answer[n]
+
+def all_partitions(n):
+    X = BasicAlgebra("Eqn", n, [])
+    return X.con()
+
+
+class M7Search(object):
+
+    GLOBAL_DEBUG = False
+
+    def __init__(self, N):
+
+        self.ClosedM7s = None  # list of all closed M7 sublattices of Eq(X)
+        self.N = N  # cardinality of X
+        self.Bell = bell_number(N)
     
 
     def isClosed(self, M7):
+        cl = Closure(M7)
+        cl.
         pass
     
     
     def get_Closed_M7s(self,N):
         '''Find all spanning M7 sublattices of Eq(N) and return those that are closed.'''
         # First get all partitions on N element set.
-        self.EqN = Closure.all_partitions(N)
+        #self.EqN = Closure.all_partitions(N)
         M7s = self.get_M7s_aux([], [],  N)
         return [M7 for M7 in M7s if self.isClosed(M7)]
 

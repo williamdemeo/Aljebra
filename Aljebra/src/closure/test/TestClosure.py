@@ -252,7 +252,7 @@ class Test(unittest.TestCase):
 
             for case_number in test_cases:
                 print "\n--- Test", case_number, "---"
-                Eqn = Closure.get_all_partitions(case_number)
+                Eqn = Closure.all_partitions(case_number)
                 print "Created Eq("+str(case_number)+") with universe: ", Eqn.universe()
 
 
