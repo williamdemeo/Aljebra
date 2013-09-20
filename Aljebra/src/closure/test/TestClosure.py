@@ -197,6 +197,7 @@ class Test(unittest.TestCase):
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
         test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        # Case 3 now works.  computed the closure on this 36 element algebra in just 5549 seconds.  
         #test_cases = [5]  # a closed M4
         #test_cases = [] # (run no tests)
         
