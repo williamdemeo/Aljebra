@@ -305,7 +305,7 @@ class Closure(object):
 
 
     @staticmethod
-    def algebra_from_unary_polymorphisms_file_based(fns, fname):
+    def algebra_from_unary_polymorphisms_filebased(fns, fname):
         '''Given a list fns, of unary functions on a set X = {0, 1,..., n-1}, 
         return the BasicAlgebra object representing <X, fns>.  This version of
         the method cheats by writing to a .ua file first, then reading it in.'''
