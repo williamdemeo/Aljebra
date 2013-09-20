@@ -15,6 +15,7 @@ from OperationFactory import Operation
 from org.uacalc.alg import BasicAlgebra
 from org.uacalc.io import AlgebraIO
 from org.uacalc.lat import BasicLattice
+from org.uacalc.alg.op import AbstractOperation
 
 
 print "\n---- Example 1 ----"
@@ -98,14 +99,65 @@ print "   alg.getName() = ", alg.getName()
 print "   alg.universe() = ", alg.universe()
 
 if os.path.exists("../../Algebras"):
-
+    fqname2 = "../../Algebras/Example2_MutliunaryAlgebra.ua"
     # Optionally, write the algebra to a UACalc file that can be loaded into the gui.
-    AlgebraIO.writeAlgebraFile(alg, "../../Algebras/Example2_MutliunaryAlgebra.ua")
-    print "UACalc algebra file created: ../../Algebras/Example2_MutliunaryAlgebra.ua"
+    AlgebraIO.writeAlgebraFile(alg, fqname2)
+    print "UACalc algebra file created:", fqname2
     
-    
+
 
 print "\n\n---- Example 3 ----"
+print "Constructing an algebra with unary operations defined 'by hand' as vectors."
+print "Quick and dirty method: write to a .ua file, then read with AlgebraIO"
+
+def write_unaryalgebra(ops, fqname):
+    '''Write a .ua file representing a multiunary algebra with operations given
+    by the vectors in the argument ops.'''
+    outfile = open(fqname, 'w')  # open file for appending (might change this to 'w')
+    outfile.write("<?xml version=\"1.0\"?>\n")
+    outfile.write("<algebra>\n<basicAlgebra>\n<algName>"+name+"</algName>\n")
+    outfile.write("<cardinality>"+ str(len(ops[0]))+"</cardinality>\n")
+    outfile.write("<operations>\n")
+    opcount=0
+    
+    for op in ops:
+        outfile.write("<op>\n<opSymbol>\n<opName>op"+str(opcount)+"</opName>\n")
+        outfile.write("<arity>1</arity>\n</opSymbol>\n<opTable>\n<intArray>\n<row>")
+        for x in range(len(op)-1):
+            outfile.write(str(op[x])+",")
+        outfile.write(str(op[-1]))
+        outfile.write("</row>\n</intArray>\n</opTable>\n</op>\n")
+        opcount=opcount+1;
+    outfile.write("</operations>\n</basicAlgebra>\n</algebra>\n")
+    outfile.close()
+
+# The algebra will have universe {0, 1, ..., 7}, and the following unary operations: 
+f0 = 7,6,6,7,3,2,2,3
+f1 = 0,1,1,0,4,5,5,4
+f2 = 0,2,3,1,0,2,3,1
+ff = f0, f1, f2
+
+name = "Example3"    
+if os.path.exists("../../Algebras"):
+    fqname3 = '../../Algebras/'+name+'.ua'
+else:
+    fqname3 = name+'.ua'
+
+print "Writing algebra to file ", fqname3
+write_unaryalgebra(ff, fqname3)
+
+
+alg = AlgebraIO.readAlgebraFile(fqname3)
+
+print "\nQuick check that we constructed an algebra:"
+print "   alg.getName() = ", alg.getName()        
+print "   alg.universe() = ", alg.universe()
+    
+
+
+
+
+print "\n\n---- Example 4 ----"
 print "The congruence lattice of a congruence lattice."
 print "\nThe congruence lattice Con(A) of the algebra A is itself an algebra (specifically, a lattice)."
 print "We represent it in UACalc as an object of the class BasicLattice.  UACalc represents the" 

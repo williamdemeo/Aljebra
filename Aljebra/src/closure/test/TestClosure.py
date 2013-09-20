@@ -120,10 +120,13 @@ class Test(unittest.TestCase):
 
 
     def test_compute_optimal_sdf_subset(self):
+        # removing this for now, since it might be causing memory issues (though unlikely)
+        #test_fun_name = inspect.stack()[0][3]  # name of current function
+        #fun_name = test_fun_name[5:]  # name of function to be tested
         fun_name = "compute_optimal_sdf_subset()"
 
         # Which examples to test:
-        test_cases = [4,5]  
+        test_cases = []  
         #test_cases = [0,1]
 
         p30 = self.parts[3][0].join(self.parts[3][1])
@@ -150,13 +153,14 @@ class Test(unittest.TestCase):
 
 
     def test_compute_sd_Fix(self):
-        test_fun_name = inspect.stack()[0][3]  # name of current function
-        fun_name = test_fun_name[5:]  # name of function to be tested
+        # removing this for now, since it might be causing memory issues (though unlikely)
+        #test_fun_name = inspect.stack()[0][3]  # name of current function
+        #fun_name = test_fun_name[5:]  # name of function to be tested
+        fun_name = "compute_sd_Fix"
 
         # Which examples to test:
-        test_cases = [4,5]  
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
-        #test_cases = [] # (run no tests)
+        test_cases = [] # (run no tests)
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -185,13 +189,14 @@ class Test(unittest.TestCase):
                     print "\n"
 
     def test_basic_algebra_from_unary_polymorphisms(self):
-        test_fun_name = inspect.stack()[0][3]  # name of current function
-        fun_name = test_fun_name[5:]  # name of function to be tested
+        # removing this for now, since it might be causing memory issues (though unlikely)
+        #test_fun_name = inspect.stack()[0][3]  # name of current function
+        #fun_name = test_fun_name[5:]  # name of function to be tested
+        fun_name = "basic_algebra_from_unary_polymorphisms()"
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = [3]
-        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         #test_cases = [] # (run no tests)
         
         if len(test_cases)>0:
@@ -205,11 +210,11 @@ class Test(unittest.TestCase):
                 print "    cl.partitions = ", cl.partitions
 
                 FF = cl.compute_sd_Fix([], [])
-                A = cl.basic_algebra_from_unary_polymorphisms(FF)
+                A = cl.basic_algebra_from_unary_polymorphisms_filebased(FF, "M3ParallelSum.ua")
                 print "Created algebra A with universe: ", A.universe()
                 # compute congruence lattices, check they are equal to each other and to original set of partitions
                 print "|ConA| = ", len(A.con().universe())
-                print "ConA = ", A.con().universe()
+                #print "ConA = ", A.con().universe()
 
 
                 if not case_number==3:  # case 3 takes too long to compute the old way

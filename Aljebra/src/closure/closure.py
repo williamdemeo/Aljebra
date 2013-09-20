@@ -266,9 +266,32 @@ class Closure(object):
         AlgebraIO.writeAlgebraFile(A, "/tmp/A.ua")
         return A.con()
 
+    @staticmethod
+    def write_unary_algebra(aname, ops, fname):
+        '''Write to the file fname.ua a multiunary algebra with operations given
+        by the vectors in the argument ops.  The algebra name will be aname.'''
+        outfile = open(fname, 'w')  # open file for appending (might change this to 'w')
+        outfile.write("<?xml version=\"1.0\"?>\n")
+        outfile.write("<algebra>\n<basicAlgebra>\n<algName>"+aname+"</algName>\n")
+        outfile.write("<cardinality>"+ str(len(ops[0]))+"</cardinality>\n")
+        outfile.write("<operations>\n")
+        opcount=0
+    
+        for op in ops:
+            outfile.write("<op>\n<opSymbol>\n<opName>op"+str(opcount)+"</opName>\n")
+            outfile.write("<arity>1</arity>\n</opSymbol>\n<opTable>\n<intArray>\n<row>")
+            for x in range(len(op)-1):
+                outfile.write(str(op[x])+",")
+            outfile.write(str(op[-1]))
+            outfile.write("</row>\n</intArray>\n</opTable>\n</op>\n")
+            opcount=opcount+1;
+
+        outfile.write("</operations>\n</basicAlgebra>\n</algebra>\n")
+        outfile.close()
+
 
     @staticmethod
-    def basic_algebra_from_unary_polymorphisms(fns):
+    def algebra_from_unary_polymorphisms(fns):
         '''Given a list fns, of unary functions on a set X = {0, 1,..., n-1}, 
         return the BasicAlgebra object representing <X, fns>'''
         f0 = fns[0]
@@ -277,19 +300,19 @@ class Closure(object):
         # use the given functions in fns to construct UACalc operations
         for i in range(len(fns)):
             ops.append(Operation(fns[i], "f"+str(i), 1, n))
-
-        #===========================================================================
-        # # DEBUGGING: check that the operations give what we expect
-        # print "Operations:"
-        # for i in range(len(ops)):
-        #     print "   " + ops[i].symbol().name() + ":", 
-        #     for j in range(n):
-        #         print ops[i].intValueAt([j]),
-        #     print " "
-        #===========================================================================
-
         # construct and return the algebra
         return BasicAlgebra("", n, ops)
+
+
+    @staticmethod
+    def algebra_from_unary_polymorphisms_file_based(fns, fname):
+        '''Given a list fns, of unary functions on a set X = {0, 1,..., n-1}, 
+        return the BasicAlgebra object representing <X, fns>.  This version of
+        the method cheats by writing to a .ua file first, then reading it in.'''
+        Closure.write_unary_algebra("alg", fns, fname)
+        
+        # construct and return the algebra
+        return AlgebraIO.readAlgebraFile(fname)
 
 
     @staticmethod
