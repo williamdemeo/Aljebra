@@ -15,6 +15,7 @@ from OperationFactory import Operation
 from org.uacalc.alg import BasicAlgebra
 from org.uacalc.io import AlgebraIO
 from org.uacalc.lat import BasicLattice
+from org.uacalc.alg.op import Operations
 
 
 print "\n---- Example 1 ----"
