@@ -212,8 +212,7 @@ class Test(unittest.TestCase):
                 print "    cl.partitions = ", cl.partitions
 
                 FF = cl.compute_sd_Fix([], [])
-                #A = cl.algebra_from_unary_polymorphisms_filebased(FF, "M3ParallelSum.ua")
-                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "ClosedM4.ua")
+                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "M3ParallelSum.ua")
                 print "Created algebra A with universe: ", A.universe()
                 # compute congruence lattices, check they are equal to each other and to original set of partitions
                 print "|ConA| = ", len(A.con().universe())
