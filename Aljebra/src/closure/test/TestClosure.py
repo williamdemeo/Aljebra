@@ -196,7 +196,7 @@ class Test(unittest.TestCase):
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        test_cases = []  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         # Case 3 now works.  computed the closure on this 36 element algebra in just 5549 seconds.  
         #test_cases = [5]  # a closed M4
         #test_cases = [] # (run no tests)
@@ -229,7 +229,12 @@ class Test(unittest.TestCase):
                     self.assertEquals(A.universe(), correct_ans.universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
                     self.assertEquals(A.con().universe(), correct_ans.con().universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
-        
+    def test_findMn(self):
+        Mns = Closure.findMn(4,2)
+        print "len(Mns): ", len(Mns)
+        for m in Mns:
+            print m
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

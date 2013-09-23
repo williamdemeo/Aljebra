@@ -7,6 +7,8 @@ from org.uacalc.io import AlgebraIO
 from OperationFactory import Operation
 #from org.uacalc.alg.op import Operation
 from org.uacalc.alg import BasicAlgebra
+import math
+from org.uacalc.util import SequenceGenerator
 
 
 class ClosureIndexError(Exception):
@@ -45,6 +47,7 @@ def debug_print(args):
         for m in args:
             print m,
         print "\n"
+
 
 
 
@@ -411,6 +414,70 @@ class Closure(object):
                 self.nonoptimal_idemdecs.append(Closure.partition2idemdec(p))
 
         return answer
-            
     
     
+    @staticmethod
+    def isComplement(pars, par1):
+        n = par1.universeSize()
+        for p in pars:
+            if not par1.join(p)==BasicPartition.one(n) or not par1.meet(p)==BasicPartition.zero(n):
+                return False
+        return True
+
+    @staticmethod
+    def get_max_rank(pars):
+        maxrank = 0
+        for p in pars:
+            if p.rank() > maxrank:
+                maxrank = p.rank()
+        return maxrank
+         
+    @staticmethod
+    def findMn(N,n):
+        # Recursively build an array of all Mn sublattices of Eq(X).
+        # N is the cardinality of X.
+        # n is the number of atoms of the Mns returned
+        
+        Mns = [] # The Mns (a list of lists of BasicPartitions)
+        MnC = [] # The next candidate Mn
+        for numblks in range(2,N/2+2):
+            aa = SequenceGenerator.initialPartition(N, numblks)
+            incaa = SequenceGenerator.partitionArrayIncrementor(aa,numblks)
+            while(incaa.increment()):
+                print "aa: ", aa   # debugging
+                pa = BasicPartition.jbToPartition(aa)
+                print "BasicPartition.jbToPartition(aa): ", pa # debugging
+                MnC = [pa]
+                Mns=Closure.findMnAux(MnC, Mns, N, n)
+        return Mns
+
+    @staticmethod
+    def findMnAux(MnC, Mns,N,n):
+        if len(MnC)==n:
+            Mns.append(MnC)
+            return Mns
+        maxblks = Closure.get_max_rank(MnC)
+        for nblks in range(N/maxblks, N/2+2):
+            bb = SequenceGenerator.initialPartition(N,nblks)
+            incbb = SequenceGenerator.partitionArrayIncrementor(bb,nblks)
+            while(incbb.increment()):
+                print "bb: ", bb   # debugging
+                pb = BasicPartition.jbToPartition(bb)
+                print "BasicPartition.jbToPartition(bb): ", pb # debugging
+                if Closure.isComplement(MnC, pb):
+                    MnC.append(pb)
+                    return Closure.findMnAux(MnC, Mns, N, n)
+        return Mns
+    
+        
+
+
+
+
+
+
+
+
+
+
+
