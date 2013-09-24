@@ -431,6 +431,14 @@ class Closure(object):
             if p.rank() > maxrank:
                 maxrank = p.rank()
         return maxrank
+
+    @staticmethod
+    def get_min_rank(pars):
+        minrank = pars[0].universeSize()
+        for p in pars:
+            if p.rank() < minrank:
+                minrank = p.rank()
+        return minrank
          
     @staticmethod
     def findMn(N,n):
@@ -443,30 +451,49 @@ class Closure(object):
         for numblks in range(2,N/2+2):
             aa = SequenceGenerator.initialPartition(N, numblks)
             incaa = SequenceGenerator.partitionArrayIncrementor(aa,numblks)
-            while(incaa.increment()):
-                print "aa: ", aa   # debugging
+            inca_ok = True
+            while(inca_ok):
+                #print "aa: ", aa   # debugging
                 pa = BasicPartition.jbToPartition(aa)
-                print "BasicPartition.jbToPartition(aa): ", pa # debugging
+                #print "BasicPartition.jbToPartition(aa): ", pa # debugging
                 MnC = [pa]
+                #print "MnC: ", MnC   # debugging
                 Mns=Closure.findMnAux(MnC, Mns, N, n)
+                if not incaa.increment():
+                    inca_ok=False
+                    
         return Mns
 
     @staticmethod
-    def findMnAux(MnC, Mns,N,n):
+    def findMnAux(MnC,Mns,N,n):
         if len(MnC)==n:
             Mns.append(MnC)
             return Mns
-        maxblks = Closure.get_max_rank(MnC)
-        for nblks in range(N/maxblks, N/2+2):
+        minr = Closure.get_min_rank(MnC)
+        maxr = Closure.get_max_rank(MnC)
+        # If x and y are complements, we have,
+        # by additive rule: N - 1 <= r(x) + r(y)
+        # by multiplicative rule: N <= b(x)b(y)
+        # so N/(N-r(x)) <= b(y) <= r(x)+1
+        # If we are picking y to be pairwise complement to all x in a list,
+        # and if maxr (minr) is the max (min) rank of those in the list, then we have
+        # 
+        #           N/(N-maxr) <= b(y) <= minr + 1
+        #
+        for nblks in range(N/(N-maxr), minr+2):
             bb = SequenceGenerator.initialPartition(N,nblks)
             incbb = SequenceGenerator.partitionArrayIncrementor(bb,nblks)
-            while(incbb.increment()):
-                print "bb: ", bb   # debugging
+            incb_ok = True
+            while(incb_ok):
+                #print "bb: ", bb   # debugging
                 pb = BasicPartition.jbToPartition(bb)
-                print "BasicPartition.jbToPartition(bb): ", pb # debugging
+                #print "BasicPartition.jbToPartition(bb): ", pb # debugging
                 if Closure.isComplement(MnC, pb):
                     MnC.append(pb)
                     return Closure.findMnAux(MnC, Mns, N, n)
+                #print "MnC: ", MnC   # debugging
+                if not incbb.increment():
+                    incb_ok=False
         return Mns
     
         

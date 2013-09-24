@@ -229,11 +229,25 @@ class Test(unittest.TestCase):
                     self.assertEquals(A.universe(), correct_ans.universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
                     self.assertEquals(A.con().universe(), correct_ans.con().universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
+
+    @staticmethod
+    def unique_items(L):
+        ans = []
+        for p in L:
+            if not sorted(p) in ans:
+                ans.append(sorted(p))
+        return ans
+
     def test_findMn(self):
-        Mns = Closure.findMn(4,2)
-        print "len(Mns): ", len(Mns)
-        for m in Mns:
-            print m
+        for N in range(3,11):
+            for n in range(2,N+1):
+                Mns = Closure.findMn(N,n)
+                print N, n, 'nonunique:', len(Mns),
+                UniqueMns = Test.unique_items(Mns)
+                print 'unique:', len(UniqueMns)
+
+#         for p in UniqueMns:
+#             print p
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
