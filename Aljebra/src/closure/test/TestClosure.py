@@ -242,6 +242,8 @@ class Test(unittest.TestCase):
         for N in range(3,11):
             for n in range(2,N+1):
                 Mns = Closure.findMn(N,n)
+                if len(Mns)==0:
+                    break
                 print N, n, 'nonunique:', len(Mns),
                 UniqueMns = Test.unique_items(Mns)
                 print 'unique:', len(UniqueMns)
