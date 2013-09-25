@@ -239,14 +239,37 @@ class Test(unittest.TestCase):
         return ans
 
     def test_findMn(self):
-        for N in range(3,11):
-            for n in range(2,N+1):
-                Mns = Closure.findMn(N,n)
-                if len(Mns)==0:
-                    break
-                print N, n, 'nonunique:', len(Mns),
-                UniqueMns = Test.unique_items(Mns)
-                print 'unique:', len(UniqueMns)
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
+
+        # Which examples to test:
+        test_cases = {0:[3,2], # M_2 in Eq(3)
+                      1:[3,3], # M_3 in Eq(3)
+                      2:[4,3]} # M_3 in Eq(4)
+        correct_ans = {0:3, # there are 3 M_2's in Eq(3)
+                       1:1, # there is 1 M_3 in Eq(3)
+                       2:7} # there are 7 M_3's in Eq(4)
+        
+        if len(test_cases)>0:
+            print "\n===== Testing", fun_name, "====="
+
+            for case in range(len(test_cases)):
+                print "\n--- Test finding M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+") ---"
+                Mns = Closure.findMn(test_cases[case][0],test_cases[case][1])
+                Mns = Test.unique_items(Mns)
+                print "\nThere are", len(Mns), "M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+")   Expected:", correct_ans[case]
+                print "\nThey are:", Mns
+                self.assertEquals(len(Mns), correct_ans[case], fun_name+" seems broken")
+#                 
+#         
+#         for N in range(3,11):
+#             for n in range(2,N+1):
+#                 Mns = Closure.findMn(N,n)
+#                 if len(Mns)==0:
+#                     break
+#                 print N, n, 'nonunique:', len(Mns),
+#                 UniqueMns = Test.unique_items(Mns)
+#                 print 'unique:', len(UniqueMns)
 
 #         for p in UniqueMns:
 #             print p

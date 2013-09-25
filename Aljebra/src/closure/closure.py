@@ -421,6 +421,8 @@ class Closure(object):
         n = par1.universeSize()
         for p in pars:
             if not par1.join(p)==BasicPartition.one(n) or not par1.meet(p)==BasicPartition.zero(n):
+                # debugging: 
+                # print "Failed complement test:", par1, "V", p, "=", par1.join(p), par1, "^", p, "=", par1.meet(p) 
                 return False
         return True
 
@@ -453,11 +455,11 @@ class Closure(object):
             incaa = SequenceGenerator.partitionArrayIncrementor(aa,numblks)
             inca_ok = True
             while(inca_ok):
-                #print "aa: ", aa   # debugging
+                print "aa: ", aa   # debugging
                 pa = BasicPartition.jbToPartition(aa)
-                #print "BasicPartition.jbToPartition(aa): ", pa # debugging
+                print "BasicPartition.jbToPartition(aa): ", pa # debugging
                 MnC = [pa]
-                #print "MnC: ", MnC   # debugging
+                print "MnC: ", MnC   # debugging
                 Mns=Closure.findMnAux(MnC, Mns, N, n)
                 if not incaa.increment():
                     inca_ok=False
@@ -466,6 +468,7 @@ class Closure(object):
 
     @staticmethod
     def findMnAux(MnC,Mns,N,n):
+        print "MnC, Mns:", MnC, ",", Mns
         if len(MnC)==n:
             Mns.append(MnC)
             return Mns
@@ -485,13 +488,14 @@ class Closure(object):
             incbb = SequenceGenerator.partitionArrayIncrementor(bb,nblks)
             incb_ok = True
             while(incb_ok):
-                #print "bb: ", bb   # debugging
+                print "bb: ", bb   # debugging
                 pb = BasicPartition.jbToPartition(bb)
-                #print "BasicPartition.jbToPartition(bb): ", pb # debugging
+                print "BasicPartition.jbToPartition(bb): ", pb # debugging
                 if Closure.isComplement(MnC, pb):
-                    MnC.append(pb)
-                    return Closure.findMnAux(MnC, Mns, N, n)
-                #print "MnC: ", MnC   # debugging
+                    print ">>> passed complement test"
+                    MnCnew = MnC+[pb]
+                    print ">>> MnCnew: ", MnCnew   # debugging
+                    Mns=Closure.findMnAux(MnCnew, Mns, N, n)
                 if not incbb.increment():
                     incb_ok=False
         return Mns
