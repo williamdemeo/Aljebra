@@ -262,14 +262,15 @@ class Test(unittest.TestCase):
                 self.assertEquals(len(Mns), correct_ans[case], fun_name+" seems broken")
 #                 
 #         
-#         for N in range(3,11):
-#             for n in range(2,N+1):
-#                 Mns = Closure.findMn(N,n)
-#                 if len(Mns)==0:
-#                     break
-#                 print N, n, 'nonunique:', len(Mns),
-#                 UniqueMns = Test.unique_items(Mns)
-#                 print 'unique:', len(UniqueMns)
+        for N in range(3,11):
+            for n in range(2,N+2):
+                Mns = Closure.findMn(N,n)
+                if len(Mns)==0:
+                    break
+                print N, n,
+                #print 'nonunique:', len(Mns), 'unique:',
+                UniqueMns = Test.unique_items(Mns)
+                print len(UniqueMns)
 
 #         for p in UniqueMns:
 #             print p
