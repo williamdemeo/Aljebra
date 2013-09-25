@@ -443,13 +443,15 @@ class Closure(object):
         return minrank
          
     @staticmethod
-    def findMn(N,n):
+    def findMn(N,minn,maxn):
         # Recursively build an array of all Mn sublattices of Eq(X).
         # N is the cardinality of X.
         # n is the number of atoms of the Mns returned
         
         Mns = [] # The Mns (a list of lists of BasicPartitions)
         MnC = [] # The next candidate Mn
+        for n in range(maxn):
+             Mns.append([])
         for numblks in range(2,N/2+2):
             aa = SequenceGenerator.initialPartition(N, numblks)
             incaa = SequenceGenerator.partitionArrayIncrementor(aa,numblks)
@@ -461,45 +463,57 @@ class Closure(object):
                 # print "BasicPartition.jbToPartition(aa): ", pa # debugging
                 MnC = [pa]
                 # print "MnC: ", MnC   # debugging
-                Mns=Closure.findMnAux(MnC, Mns, N, n)
+                Mns=Closure.findMnAux(MnC, Mns, N,minn, maxn)
                 if not incaa.increment():
                     inca_ok=False
                     
         return Mns
 
     @staticmethod
-    def findMnAux(MnC,Mns,N,n):
+    def unique_items(L):
+        ans = []
+        for p in L:
+            if not sorted(p) in ans:
+                ans.append(sorted(p))
+        return ans
+
+    @staticmethod
+    def findMnAux(MnC,Mns,N,minn,maxn):
         # debugging: print "MnC, Mns:", MnC, ",", Mns
-        if len(MnC)==n:
-            Mns.append(MnC)
-            return Mns
-        minr = Closure.get_min_rank(MnC)
-        maxr = Closure.get_max_rank(MnC)
-        # If x and y are complements, we have,
-        # by additive rule: N - 1 <= r(x) + r(y)
-        # by multiplicative rule: N <= b(x)b(y)
-        # so N/(N-r(x)) <= b(y) <= r(x)+1
-        # If we are picking y to be pairwise complement to all x in a list,
-        # and if maxr (minr) is the max (min) rank of those in the list, then we have
-        # 
-        #           N/(N-maxr) <= b(y) <= minr + 1
-        #
-        for nblks in range(N/(N-maxr), minr+2):
-            bb = SequenceGenerator.initialPartition(N,nblks)
-            incbb = SequenceGenerator.partitionArrayIncrementor(bb,nblks)
-            incb_ok = True
-            while(incb_ok):
-                # debugging: 
-                # print "bb: ", bb   # debugging
-                pb = BasicPartition.jbToPartition(bb)
-                # print "BasicPartition.jbToPartition(bb): ", pb # debugging
-                if Closure.isComplement(MnC, pb):
-                    #  print ">>> passed complement test"
-                    MnCnew = MnC+[pb]
-                    # print ">>> MnCnew: ", MnCnew   # debugging
-                    Mns=Closure.findMnAux(MnCnew, Mns, N, n)
-                if not incbb.increment():
-                    incb_ok=False
+        if len(MnC)<maxn:
+            minr = Closure.get_min_rank(MnC)
+            maxr = Closure.get_max_rank(MnC)
+            # If x and y are complements, we have,
+            # by additive rule: N - 1 <= r(x) + r(y)
+            # by multiplicative rule: N <= b(x)b(y)
+            # so N/(N-r(x)) <= b(y) <= r(x)+1
+            # If we are picking y to be pairwise complement to all x in a list,
+            # and if maxr (minr) is the max (min) rank of those in the list, then we have
+            # 
+            #           N/(N-maxr) <= b(y) <= minr + 1
+            #
+            for nblks in range(N/(N-maxr), minr+2):
+                bb = SequenceGenerator.initialPartition(N,nblks)
+                incbb = SequenceGenerator.partitionArrayIncrementor(bb,nblks)
+                incb_ok = True
+                while(incb_ok):
+                    # debugging: 
+                    # print "bb: ", bb   # debugging
+                    pb = BasicPartition.jbToPartition(bb)
+                    # print "BasicPartition.jbToPartition(bb): ", pb # debugging
+                    if Closure.isComplement(MnC, pb):
+                        #  print ">>> passed complement test"
+                        MnCnew = MnC+[pb]
+                        # print ">>> MnCnew: ", MnCnew   # debugging
+                        Mns=Closure.findMnAux(MnCnew, Mns, N,minn, maxn)
+                    if not incbb.increment():
+                        incb_ok=False
+
+        if len(MnC)>=minn:
+            MnC = sorted(MnC)
+            if not MnC in Mns[len(MnC)]:
+                Mns[len(MnC)].append(MnC)
+        
         return Mns
     
         

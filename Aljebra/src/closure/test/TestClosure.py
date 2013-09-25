@@ -230,14 +230,7 @@ class Test(unittest.TestCase):
                     self.assertEquals(A.con().universe(), correct_ans.con().universe(), "Test "+str(case_number)+": " + fun_name + "seems broken")
 
 
-    @staticmethod
-    def unique_items(L):
-        ans = []
-        for p in L:
-            if not sorted(p) in ans:
-                ans.append(sorted(p))
-        return ans
-
+ 
     def test_findMn(self):
         test_fun_name = inspect.stack()[0][3]  # name of current function
         fun_name = test_fun_name[5:]  # name of function to be tested
@@ -253,24 +246,27 @@ class Test(unittest.TestCase):
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
 
-            for case in range(len(test_cases)):
-                print "\n--- Test finding M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+") ---"
-                Mns = Closure.findMn(test_cases[case][0],test_cases[case][1])
-                Mns = Test.unique_items(Mns)
-                print "\nThere are", len(Mns), "M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+")   Expected:", correct_ans[case]
-                print "\nThey are:", Mns
-                self.assertEquals(len(Mns), correct_ans[case], fun_name+" seems broken")
-#                 
+#             for case in range(len(test_cases)):
+#                 print "\n--- Test finding M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+") ---"
+#                 Mns = Closure.findMn(test_cases[case][0],test_cases[case][1])
+#                 Mns = Closure.unique_items(Mns)
+#                 print "\nThere are", len(Mns), "M_"+str(test_cases[case][1]), "in Eq("+str(test_cases[case][0])+")   Expected:", correct_ans[case]
+#                 print "\nThey are:", Mns
+#                 self.assertEquals(len(Mns), correct_ans[case], fun_name+" seems broken")
+# #                 
 #         
         for N in range(3,11):
-            for n in range(2,N+2):
-                Mns = Closure.findMn(N,n)
-                if len(Mns)==0:
-                    break
-                print N, n,
-                #print 'nonunique:', len(Mns), 'unique:',
-                UniqueMns = Test.unique_items(Mns)
-                print len(UniqueMns)
+            print "\n\n--- Eq("+str(N)+") ---\n"
+            Mns = Closure.findMn(N,3,N+3)
+            for k in range(3,N+3):
+                if len(Mns[k])>0:
+                    print len(Mns[k]), "maximal M_"+str(k),
+                    if len(Mns[k])<10:
+                        print "   (a short list, so we print it)"
+                        for mm in range(len(Mns[k])):
+                            print "               ", Mns[k][mm] 
+                    else:
+                        print
 
 #         for p in UniqueMns:
 #             print p
