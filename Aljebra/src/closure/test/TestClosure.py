@@ -257,7 +257,7 @@ class Test(unittest.TestCase):
 #         
         for N in range(3,11):
             print "\n\n--- Eq("+str(N)+") ---\n"
-            Mns = Closure.findMn(N,3,N+3)
+            Mns = Closure.findMn(N,2,N+3)
             for k in range(3,N+3):
                 if len(Mns[k])>0:
                     print len(Mns[k]), "maximal M_"+str(k),
