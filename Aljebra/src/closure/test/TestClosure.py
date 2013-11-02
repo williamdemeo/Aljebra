@@ -7,7 +7,7 @@ import unittest
 import inspect  # for getting name of current function
 from org.uacalc.alg.conlat import BasicPartition
 from closure.closure import Closure
-from json.tests.test_encode_basestring_ascii import CASES
+# from json.tests.test_encode_basestring_ascii import CASES
 from compiler.transformer import asList
 
 class Test(unittest.TestCase):
@@ -77,7 +77,7 @@ class Test(unittest.TestCase):
         M1 = BasicPartition("|0,5,12,19,24,27|1,6,13,17,22,28|2,7,14,18,23,29|3,8,10,15,21,26|4,9,11,16,20,25|")
         M2 = BasicPartition("|0,5,10,15,20,25|1,6,11,16,21,26|2,7,12,17,22,27|3,8,13,18,23,28|4,9,14,19,24,29|")
         J1 = BasicPartition("|0,10,20|1,16,26|2,12,17|3,13,18|4,14,24|5,15,25|6,11,21|7,22,27|8,23,28|9,19,29|")
-        self.parts = self.parts + ([K, M1, M2, J1],)
+        self.parts = self.parts + ([K, M1, M2],)
             
    
     def tearDown(self):
@@ -128,13 +128,13 @@ class Test(unittest.TestCase):
 
     def test_compute_optimal_sdf_subset(self):
         # removing this for now, since it might be causing memory issues (though unlikely)
-        #test_fun_name = inspect.stack()[0][3]  # name of current function
-        #fun_name = test_fun_name[5:]  # name of function to be tested
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
         fun_name = "compute_optimal_sdf_subset()"
 
         # Which examples to test:
-        test_cases = []  
-        #test_cases = [0,1]
+        #test_cases = []  
+        test_cases = [1,3]
 
         p30 = self.parts[3][0].join(self.parts[3][1])
         p31 = self.parts[3][3].join(self.parts[3][4])
@@ -160,14 +160,13 @@ class Test(unittest.TestCase):
 
 
     def test_compute_sd_Fix(self):
-        # removing this for now, since it might be causing memory issues (though unlikely)
-        #test_fun_name = inspect.stack()[0][3]  # name of current function
-        #fun_name = test_fun_name[5:]  # name of function to be tested
-        fun_name = "compute_sd_Fix"
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
+        #fun_name = "compute_sd_Fix"
 
         # Which examples to test:
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
-        test_cases = [] # (run no tests)
+        test_cases = [6] # 
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -196,10 +195,9 @@ class Test(unittest.TestCase):
                     print "\n"
 
     def test_algebra_from_unary_polymorphisms_filebased(self):
-        # removing this for now, since it might be causing memory issues (though unlikely)
-        #test_fun_name = inspect.stack()[0][3]  # name of current function
-        #fun_name = test_fun_name[5:]  # name of function to be tested
-        fun_name = "basic_algebra_from_unary_polymorphisms()"
+        test_fun_name = inspect.stack()[0][3]  # name of current function
+        fun_name = test_fun_name[5:]  # name of function to be tested
+        #fun_name = "basic_algebra_from_unary_polymorphisms()"
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
@@ -227,7 +225,7 @@ class Test(unittest.TestCase):
                 #print "ConA = ", A.con().universe()
 
 
-                if not case_number==3:  # case 3 takes too long to compute the old way
+                if not case_number==6:  # case 6 takes too long to compute the old way
                     correct_ans = BasicPartition.unaryPolymorphismsAlgebra(partitions)
                     print "Correct algebra B has universe: ", correct_ans.universe()
                     print "|ConB| = ", len(correct_ans.con().universe())
