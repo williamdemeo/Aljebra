@@ -7,7 +7,6 @@ from org.uacalc.io import AlgebraIO
 from OperationFactory import Operation
 #from org.uacalc.alg.op import Operation
 from org.uacalc.alg import BasicAlgebra
-import math
 from org.uacalc.util import SequenceGenerator
 
 

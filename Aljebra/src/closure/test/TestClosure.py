@@ -71,6 +71,13 @@ class Test(unittest.TestCase):
         x2 = BasicPartition("|0,1|2,5|3,4|")
         x3 = BasicPartition("|0,2|1,3|4,5|")
         self.parts = self.parts + ([x0, x1, x2, x3],)
+        
+        # Test Case 6 (a possibly closed L_7 in Eq(30)):
+        K = BasicPartition("|0,1,2,3,4|5,6,7,8,9|10,11,12,13,14|15,16,17,18,19|20,21,22,23,24|25,26,27,28,29|")
+        M1 = BasicPartition("|0,5,12,19,24,27|1,6,13,17,22,28|2,7,14,18,23,29|3,8,10,15,21,26|4,9,11,16,20,25|")
+        M2 = BasicPartition("|0,5,10,15,20,25|1,6,11,16,21,26|2,7,12,17,22,27|3,8,13,18,23,28|4,9,14,19,24,29|")
+        J1 = BasicPartition("|0,10,20|1,16,26|2,12,17|3,13,18|4,14,24|5,15,25|6,11,21|7,22,27|8,23,28|9,19,29|")
+        self.parts = self.parts + ([K, M1, M2, J1],)
             
    
     def tearDown(self):
@@ -196,7 +203,7 @@ class Test(unittest.TestCase):
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = []  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        test_cases = [6]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
         # Case 3 now works.  computed the closure on this 36 element algebra in just 5549 seconds.  
         #test_cases = [5]  # a closed M4
         #test_cases = [] # (run no tests)
@@ -213,7 +220,7 @@ class Test(unittest.TestCase):
 
                 FF = cl.compute_sd_Fix([], [])
                 #A = cl.algebra_from_unary_polymorphisms_filebased(FF, "M3ParallelSum.ua")
-                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "ClosedM4.ua")
+                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "Elusive7.ua")
                 print "Created algebra A with universe: ", A.universe()
                 # compute congruence lattices, check they are equal to each other and to original set of partitions
                 print "|ConA| = ", len(A.con().universe())
@@ -243,9 +250,10 @@ class Test(unittest.TestCase):
         fun_name = test_fun_name[5:]  # name of function to be tested
 
         # Which examples to test:
-        test_cases = {0:[3,2], # M_2 in Eq(3)
-                      1:[3,3], # M_3 in Eq(3)
-                      2:[4,3]} # M_3 in Eq(4)
+        test_cases = []
+#         test_cases = {0:[3,2], # M_2 in Eq(3)
+#                       1:[3,3], # M_3 in Eq(3)
+#                       2:[4,3]} # M_3 in Eq(4)
         correct_ans = {0:3, # there are 3 M_2's in Eq(3)
                        1:1, # there is 1 M_3 in Eq(3)
                        2:7} # there are 7 M_3's in Eq(4)
