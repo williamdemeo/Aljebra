@@ -79,6 +79,14 @@ class Test(unittest.TestCase):
         J1 = BasicPartition("|0,10,20|1,16,26|2,12,17|3,13,18|4,14,24|5,15,25|6,11,21|7,22,27|8,23,28|9,19,29|")
         self.parts = self.parts + ([K, M1, M2],)
             
+        # Test Case 7 (M4 in Eq(16)):
+        b0 = BasicPartition("|0,1,2,3|4,5,6,7|8,9,10,11|12,13,14,15|")
+        b1 = BasicPartition("|0,4,8,12|1,5,9,13|2,6,10,14|3,7,11,15|")
+        b2 = BasicPartition("|0,5,10,15|1,4,11,14|2,7,8,13|3,6,9,12|")
+        b3 = BasicPartition("|0,7,9,14|1,6,8,15|2,5,11,12|2,4,10,13|")
+        self.parts = self.parts + ([b0, b1, b2, b3],)
+            
+        
    
     def tearDown(self):
         pass
@@ -130,11 +138,11 @@ class Test(unittest.TestCase):
         # removing this for now, since it might be causing memory issues (though unlikely)
         test_fun_name = inspect.stack()[0][3]  # name of current function
         fun_name = test_fun_name[5:]  # name of function to be tested
-        fun_name = "compute_optimal_sdf_subset()"
+        #fun_name = "compute_optimal_sdf_subset()"
 
         # Which examples to test:
-        #test_cases = []  
-        test_cases = [1,3]
+        test_cases = []  
+        #test_cases = [1,3]
 
         p30 = self.parts[3][0].join(self.parts[3][1])
         p31 = self.parts[3][3].join(self.parts[3][4])
@@ -166,7 +174,7 @@ class Test(unittest.TestCase):
 
         # Which examples to test:
         #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
-        test_cases = [6] # 
+        test_cases = [] # 
         
         if len(test_cases)>0:
             print "\n===== Testing", fun_name, "====="
@@ -201,7 +209,8 @@ class Test(unittest.TestCase):
 
         # Which examples to test:
         #test_cases = [0,1,4,5]  # these all passed  
-        test_cases = [6]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        #test_cases = [3]  # 3 is the parallel sum of M_3. universe size: 36 (it will take a while to finish)
+        test_cases = [7]
         # Case 3 now works.  computed the closure on this 36 element algebra in just 5549 seconds.  
         #test_cases = [5]  # a closed M4
         #test_cases = [] # (run no tests)
@@ -218,14 +227,15 @@ class Test(unittest.TestCase):
 
                 FF = cl.compute_sd_Fix([], [])
                 #A = cl.algebra_from_unary_polymorphisms_filebased(FF, "M3ParallelSum.ua")
-                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "Elusive7.ua")
+                #A = cl.algebra_from_unary_polymorphisms_filebased(FF, "Elusive7.ua")
+                A = cl.algebra_from_unary_polymorphisms_filebased(FF, "M4over.ua")
                 print "Created algebra A with universe: ", A.universe()
                 # compute congruence lattices, check they are equal to each other and to original set of partitions
                 print "|ConA| = ", len(A.con().universe())
                 #print "ConA = ", A.con().universe()
 
 
-                if not case_number==6:  # case 6 takes too long to compute the old way
+                if not case_number==7:  # case 6 takes too long to compute the old way
                     correct_ans = BasicPartition.unaryPolymorphismsAlgebra(partitions)
                     print "Correct algebra B has universe: ", correct_ans.universe()
                     print "|ConB| = ", len(correct_ans.con().universe())
